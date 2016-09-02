@@ -53,7 +53,7 @@ class PostgresEngine extends Engine
      */
     public function update($models)
     {
-        if (!$this->shouldMaintainIndex($models->first())) {
+        if (! $this->shouldMaintainIndex($models->first())) {
             return;
         }
 
@@ -86,7 +86,7 @@ class PostgresEngine extends Engine
 
         return $query->insert(
             $data->merge([
-                $model->getKeyName() => $model->getKey()
+                $model->getKeyName() => $model->getKey(),
             ])->all()
         );
     }
@@ -107,6 +107,7 @@ class PostgresEngine extends Engine
             if ($label = $this->rankFieldWeightLabel($model, $key)) {
                 return "setweight(to_tsvector(?), '$label')";
             }
+
             return 'to_tsvector(?)';
         })->implode(' || ');
 
@@ -214,7 +215,7 @@ class PostgresEngine extends Engine
     {
         if (empty($results)) {
             return Collection::make();
-        };
+        }
 
         $results = collect($results);
 
@@ -255,7 +256,7 @@ class PostgresEngine extends Engine
     /**
      * Build ranking expression that will be used in a search.
      *   ts_rank([ weights, ] vector, query [, normalization ])
-     *   ts_rank_cd([ weights, ] vector, query [, normalization ])
+     *   ts_rank_cd([ weights, ] vector, query [, normalization ]).
      *
      * @param \Illuminate\Database\Eloquent\Model $model
      * @param string $indexColumn
@@ -343,7 +344,7 @@ class PostgresEngine extends Engine
      */
     protected function shouldMaintainIndex(Model $model = null)
     {
-        if ((bool)$this->config('maintain_index', true) === false) {
+        if ((bool) $this->config('maintain_index', true) === false) {
             return false;
         }
 

@@ -119,8 +119,7 @@ class PostgresEngineTest extends AbstractTestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([new TestModel()]));
 
         $results = $engine->map(
-            json_decode('[{"id": 1, "rank": 0.33}]')
-        , $model);
+            json_decode('[{"id": 1, "rank": 0.33}]'), $model);
 
         $this->assertCount(1, $results);
     }

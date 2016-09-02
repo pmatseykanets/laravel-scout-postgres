@@ -2,8 +2,6 @@
 
 namespace ScoutEngines\Postgres;
 
-use Illuminate\Database\ConnectionResolver;
-use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
 
