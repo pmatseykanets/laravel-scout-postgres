@@ -10,9 +10,8 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 ## Contents
 
 - [Installation](#installation)
-	- [Setting up the HipChat Service](#setting-up-the-hipchat-service)
+- [Configuration](#configuration)
 - [Usage](#usage)
-	- [Available Message methods](#available-message-methods)
 - [Changelog](#changelog)
 - [Testing](#testing)
 - [Security](#security)
