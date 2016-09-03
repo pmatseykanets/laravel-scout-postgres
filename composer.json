@@ -9,7 +9,7 @@
         "full text search",
         "FTS"
     ],
-    "homepage": "https://github.com/pmatseykanets/laravel-scout-postgresql",
+    "homepage": "https://github.com/pmatseykanets/laravel-scout-postgres",
     "license": "MIT",
     "authors": [
         {
