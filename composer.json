@@ -1,12 +1,13 @@
 {
     "name": "pmatseykanets/laravel-scout-postgres",
-    "description": "PostgreSQL FTS driver for Laravel Scout",
+    "description": "PostgreSQL Full Text Search Driver for Laravel Scout",
     "keywords": [
         "laravel",
         "laravel scout",
         "search",
         "postgresql",
-        "full text search"
+        "full text search",
+        "FTS"
     ],
     "homepage": "https://github.com/pmatseykanets/laravel-scout-postgresql",
     "license": "MIT",
