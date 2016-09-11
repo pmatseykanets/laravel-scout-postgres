@@ -33,7 +33,7 @@ You must install the service provider:
 // config/app.php
 'providers' => [
     ...
-    ScoutEngines\PostgresEngineServiceProvider::class,
+    ScoutEngines\Postgres\PostgresEngineServiceProvider::class,
 ],
 ```
 
