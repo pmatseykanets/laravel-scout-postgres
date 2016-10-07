@@ -11,10 +11,14 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+    - [Configuring PostgreSQL](#configuring-postgresql)
+    - [Prepare the schema](#prepare-the-schema)
+    - [Configuring Searchable Data](#configuring-searchable-data)
+    - [Configuring the Model](#configuring-the-model)
 - [Usage](#usage)
-- [Changelog](#changelog)
 - [Testing](#testing)
 - [Security](#security)
+- [Changelog](#changelog)
 - [Contributing](#contributing)
 - [Credits](#credits)
 - [License](#license)
@@ -64,9 +68,6 @@ To check the current value
 SHOW default_text_search_config;
 
 ```
-
-
-
 
 ### Prepare the schema
 
@@ -171,6 +172,12 @@ public function searchableAdditionalArray()
         'user_id' => $this->user_id,
     ];
 }
+```
+You may want to make your searchable column hidden so it's not standing in your way
+```php
+protected $hidden = [
+    'searchable',
+];
 ```
 
 ## Usage
