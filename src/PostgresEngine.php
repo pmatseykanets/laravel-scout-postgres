@@ -167,6 +167,22 @@ class PostgresEngine extends Engine
     }
 
     /**
+     * Get the total count from a raw result returned by the engine.
+     *
+     * @param  mixed $results
+     * @return int
+     */
+    public function getTotalCount($results)
+    {
+        if (empty($results)) {
+            return 0;
+        }
+
+        return (int) array_first($results)
+            ->total_count;
+    }
+
+    /**
      * Perform the given search on the engine.
      *
      * @param \Laravel\Scout\Builder $builder
@@ -184,6 +200,7 @@ class PostgresEngine extends Engine
             ->crossJoin($this->database->raw('plainto_tsquery(?) query'))
             ->select($builder->model->getKeyName())
             ->selectRaw("{$this->rankingExpression($builder->model, $indexColumn)} AS rank")
+            ->selectRaw('COUNT(*) OVER () AS total_count')
             ->whereRaw("$indexColumn @@ query")
             ->orderBy('rank', 'desc')
             ->orderBy('id');

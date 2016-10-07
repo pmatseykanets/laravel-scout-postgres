@@ -92,7 +92,8 @@ class PostgresEngineTest extends AbstractTestCase
 
         $table->shouldReceive('crossJoin')->with('plainto_tsquery(?) query')->andReturnSelf()
             ->shouldReceive('select')->with('id')->andReturnSelf()
-            ->shouldReceive('selectRaw')->andReturnSelf()
+            ->shouldReceive('selectRaw')->with('ts_rank(searchable,query) AS rank')->andReturnSelf()
+            ->shouldReceive('selectRaw')->with('COUNT(*) OVER () AS total_count')->andReturnSelf()
             ->shouldReceive('whereRaw')->andReturnSelf()
             ->shouldReceive('orderBy')->with('rank', 'desc')->andReturnSelf()
             ->shouldReceive('orderBy')->with('id')->andReturnSelf()
@@ -119,9 +120,20 @@ class PostgresEngineTest extends AbstractTestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([new TestModel()]));
 
         $results = $engine->map(
-            json_decode('[{"id": 1, "rank": 0.33}]'), $model);
+            json_decode('[{"id": 1, "rank": 0.33, "total_count": 1}]'), $model);
 
         $this->assertCount(1, $results);
+    }
+
+    public function test_it_returns_total_count()
+    {
+        list($engine) = $this->getEngine();
+
+        $count = $engine->getTotalCount(
+            json_decode('[{"id": 1, "rank": 0.33, "total_count": 100}]')
+        );
+
+        $this->assertEquals(100, $count);
     }
 
     protected function getEngine($config = [])
