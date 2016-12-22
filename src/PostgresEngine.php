@@ -2,11 +2,11 @@
 
 namespace ScoutEngines\Postgres;
 
-use Illuminate\Database\ConnectionResolverInterface;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngine extends Engine
 {
