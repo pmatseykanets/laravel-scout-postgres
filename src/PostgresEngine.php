@@ -2,11 +2,11 @@
 
 namespace ScoutEngines\Postgres;
 
-use Illuminate\Database\ConnectionResolverInterface;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngine extends Engine
 {
@@ -99,11 +99,11 @@ class PostgresEngine extends Engine
      */
     protected function toVector(Model $model)
     {
-        $fields = collect($model->toSearchableArray());
-
-        $select = $fields->map(function ($value) {
+        $fields = collect($model->toSearchableArray())->map(function ($value) {
             return $value === null ? '' : $value;
-        })->map(function ($_, $key) use ($model) {
+        });
+
+        $select = $fields->map(function ($_, $key) use ($model) {
             if ($label = $this->rankFieldWeightLabel($model, $key)) {
                 return "setweight(to_tsvector(?), '$label')";
             }
