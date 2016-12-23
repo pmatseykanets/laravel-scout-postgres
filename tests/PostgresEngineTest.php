@@ -26,7 +26,7 @@ class PostgresEngineTest extends AbstractTestCase
         $db->shouldReceive('query')
             ->andReturn($query = Mockery::mock('stdClass'));
         $query->shouldReceive('selectRaw')
-            ->with('to_tsvector(?) AS tsvector', ['Foo'])
+            ->with("to_tsvector(?) || setweight(to_tsvector(?), 'B') AS tsvector", ['Foo', ''])
             ->andReturnSelf();
         $query->shouldReceive('value')
             ->with('tsvector')
@@ -154,7 +154,13 @@ class TestModel extends Model
 
     public $text = 'Foo';
 
-    protected $searchableOptions = [];
+    protected $searchableOptions = [
+        'rank' => [
+            'fields' => [
+                'nullable' => 'B',
+            ],
+        ],
+    ];
 
     protected $searchableAdditionalArray = [];
 
@@ -180,7 +186,10 @@ class TestModel extends Model
 
     public function toSearchableArray()
     {
-        return ['text' => $this->text];
+        return [
+            'text' => $this->text,
+            'nullable' => null,
+        ];
     }
 
     public function searchableOptions()

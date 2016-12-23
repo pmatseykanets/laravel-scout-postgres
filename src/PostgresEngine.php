@@ -99,16 +99,18 @@ class PostgresEngine extends Engine
      */
     protected function toVector(Model $model)
     {
-        $fields = collect($model->toSearchableArray());
+        $fields = collect($model->toSearchableArray())
+            ->map(function ($value) {
+                return $value === null ? '' : $value;
+            });
 
-        $select = $fields->map(function ($value) {
-            return $value === null ? '' : $value;
-        })->map(function ($_, $key) use ($model) {
-            if ($label = $this->rankFieldWeightLabel($model, $key)) {
-                return "setweight(to_tsvector(?), '$label')";
-            }
-
-            return 'to_tsvector(?)';
+        $select = $fields->keys()
+            ->map(function ($key) use ($model) {
+                $vector = "to_tsvector(?)";
+                if ($label = $this->rankFieldWeightLabel($model, $key)) {
+                    $vector = "setweight($vector, '$label')";
+                }
+                return $vector;
         })->implode(' || ');
 
         return $this->database
@@ -322,7 +324,8 @@ class PostgresEngine extends Engine
     {
         $label = $this->option($model, "rank.fields.$field");
 
-        return collect(['A', 'B', 'C', 'D'])->contains($label) ? $label : '';
+        return collect(['A', 'B', 'C', 'D'])
+            ->contains($label) ? $label : '';
     }
 
     /**

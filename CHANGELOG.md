@@ -4,6 +4,10 @@ All notable changes to `pmatseykanets/laravel-hipchat-slash` will be documented 
 
 ## [Unreleased]
 
+## [0.2.1](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.2.1) - 2016-12-23
+### Changed
+- Fixed #2. Cast nulls to empty strings in `toVector()`. 
+
 ## [0.2.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.2.0) - 2016-10-07
 ### Added
 - Implemented `getTotalCount()` method to support length aware pagination. 
