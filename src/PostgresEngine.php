@@ -426,4 +426,15 @@ class PostgresEngine extends Engine
     {
         return array_get($this->config, $key, $default);
     }
+
+    /**
+     * Get the total count from a raw result returned by the engine.
+     *
+     * @param  mixed  $results
+     * @return int
+     */
+    public function getTotalCount($results)
+    {
+        return count($results);
+    }
 }
