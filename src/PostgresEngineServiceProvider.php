@@ -2,8 +2,8 @@
 
 namespace ScoutEngines\Postgres;
 
-use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\EngineManager;
+use Illuminate\Support\ServiceProvider;
 
 class PostgresEngineServiceProvider extends ServiceProvider
 {

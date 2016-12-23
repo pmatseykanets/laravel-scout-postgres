@@ -5,10 +5,10 @@ namespace ScoutEngines\Postgres\Test;
 use Mockery;
 use Laravel\Scout\Builder;
 use Illuminate\Database\Connection;
-use Illuminate\Database\ConnectionResolverInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use ScoutEngines\Postgres\PostgresEngine;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngineTest extends AbstractTestCase
 {

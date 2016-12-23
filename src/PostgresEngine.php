@@ -2,11 +2,11 @@
 
 namespace ScoutEngines\Postgres;
 
-use Illuminate\Database\ConnectionResolverInterface;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngine extends Engine
 {
@@ -106,12 +106,13 @@ class PostgresEngine extends Engine
 
         $select = $fields->keys()
             ->map(function ($key) use ($model) {
-                $vector = "to_tsvector(?)";
+                $vector = 'to_tsvector(?)';
                 if ($label = $this->rankFieldWeightLabel($model, $key)) {
                     $vector = "setweight($vector, '$label')";
                 }
+
                 return $vector;
-        })->implode(' || ');
+            })->implode(' || ');
 
         return $this->database
             ->query()
