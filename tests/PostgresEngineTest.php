@@ -136,6 +136,13 @@ class PostgresEngineTest extends AbstractTestCase
         $this->assertEquals(100, $count);
     }
 
+    public function test_map_ids_returns_right_key()
+    {
+        list($engine) = $this->getEngine();
+        $results = [new TestModel()];
+        $this->assertEquals([1], $engine->mapIds($results));
+    }
+
     protected function getEngine($config = [])
     {
         $resolver = Mockery::mock(ConnectionResolverInterface::class);
