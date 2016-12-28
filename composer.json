@@ -24,7 +24,7 @@
         "illuminate/contracts": "~5.3",
         "illuminate/database": "~5.3",
         "illuminate/support": "~5.3",
-        "laravel/scout": "^1.0"
+        "laravel/scout": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "5.*",

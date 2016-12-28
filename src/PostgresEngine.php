@@ -224,6 +224,11 @@ class PostgresEngine extends Engine
             ->select($query->toSql(), $bindings->all());
     }
 
+    public function mapIds($results)
+    {
+        return collect($results)->pluck('id')->values()->all();
+    }
+
     /**
      * Map the given results to instances of the given model.
      *
@@ -238,11 +243,8 @@ class PostgresEngine extends Engine
         }
 
         $results = collect($results);
-
-        $keys = $results
-            ->pluck($model->getKeyName())
-            ->values()
-            ->all();
+        
+        $keys = $this->mapIds($results);
 
         $models = $model->whereIn($model->getKeyName(), $keys)
             ->get()
