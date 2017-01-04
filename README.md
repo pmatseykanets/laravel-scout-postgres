@@ -12,7 +12,7 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 - [Installation](#installation)
 - [Configuration](#configuration)
     - [Configuring PostgreSQL](#configuring-postgresql)
-    - [Prepare the schema](#prepare-the-schema)
+    - [Prepare the Schema](#prepare-the-schema)
     - [Configuring Searchable Data](#configuring-searchable-data)
     - [Configuring the Model](#configuring-the-model)
 - [Usage](#usage)
@@ -27,6 +27,12 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 You can install the package via composer:
 
+**For scout 1.x**
+``` bash
+composer require pmatseykanets/laravel-scout-postgres:0.2.1
+```
+
+**For scout 2.x**
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
 ```
@@ -69,7 +75,7 @@ SHOW default_text_search_config;
 
 ```
 
-### Prepare the schema
+### Prepare the Schema
 
 By default the engine expects that parsed documents (model data) are stored in the same table as the Model in a column `searchable` of type `tsvector`. You'd need to create this column and an index in your schema. You can choose between `GIN` and `GiST` indexes in PostgreSQL.
 
