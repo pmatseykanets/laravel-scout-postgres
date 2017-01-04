@@ -216,7 +216,7 @@ class PostgresEngine extends Engine
             ->selectRaw('COUNT(*) OVER () AS total_count')
             ->whereRaw("$indexColumn @@ query")
             ->orderBy('rank', 'desc')
-            ->orderBy('id');
+            ->orderBy($builder->model->getKeyName());
 
         if ($perPage > 0) {
             $query->skip(($page - 1) * $perPage)
