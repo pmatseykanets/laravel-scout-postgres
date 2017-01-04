@@ -84,23 +84,11 @@ class PostgresEngineTest extends AbstractTestCase
     {
         list($engine, $db) = $this->getEngine();
 
-        $db->shouldReceive('table')
-            ->andReturn($table = Mockery::mock('stdClass'));
-        $db->shouldReceive('raw')
-            ->with('plainto_tsquery(?) query')
-            ->andReturn('plainto_tsquery(?) query');
+        $table = $this->setDbExpectations($db);
 
-        $table->shouldReceive('crossJoin')->with('plainto_tsquery(?) query')->andReturnSelf()
-            ->shouldReceive('select')->with('id')->andReturnSelf()
-            ->shouldReceive('selectRaw')->with('ts_rank(searchable,query) AS rank')->andReturnSelf()
-            ->shouldReceive('selectRaw')->with('COUNT(*) OVER () AS total_count')->andReturnSelf()
-            ->shouldReceive('whereRaw')->andReturnSelf()
-            ->shouldReceive('orderBy')->with('rank', 'desc')->andReturnSelf()
-            ->shouldReceive('orderBy')->with('id')->andReturnSelf()
-            ->shouldReceive('skip')->with(0)->andReturnSelf()
+        $table->shouldReceive('skip')->with(0)->andReturnSelf()
             ->shouldReceive('limit')->with(5)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
-            ->shouldReceive('toSql');
+            ->shouldReceive('where')->with('bar', 1);
 
         $db->shouldReceive('select')->with(null, ['foo', 1]);
 
@@ -138,9 +126,19 @@ class PostgresEngineTest extends AbstractTestCase
 
     public function test_map_ids_returns_right_key()
     {
-        list($engine) = $this->getEngine();
-        $results = [new TestModel()];
-        $this->assertEquals([1], $engine->mapIds($results));
+        list($engine, $db) = $this->getEngine();
+
+        $this->setDbExpectations($db);
+
+        $db->shouldReceive('select')
+            ->andReturn(json_decode('[{"id": 1}, {"id": 2}]'));
+
+        $builder = new Builder(new TestModel, 'foo');
+        $results = $engine->search($builder);
+        $ids = $engine->mapIds($results);
+
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $ids);
+        $this->assertEquals([1, 2], $ids->all());
     }
 
     protected function getEngine($config = [])
@@ -152,6 +150,26 @@ class PostgresEngineTest extends AbstractTestCase
         $db->shouldReceive('getDriverName')->andReturn('pgsql');
 
         return [new PostgresEngine($resolver, $config), $db];
+    }
+
+    protected function setDbExpectations($db, $skip = 0, $limit = 5)
+    {
+        $db->shouldReceive('table')
+            ->andReturn($table = Mockery::mock('stdClass'));
+        $db->shouldReceive('raw')
+            ->with('plainto_tsquery(?) query')
+            ->andReturn('plainto_tsquery(?) query');
+
+        $table->shouldReceive('crossJoin')->with('plainto_tsquery(?) query')->andReturnSelf()
+            ->shouldReceive('select')->with('id')->andReturnSelf()
+            ->shouldReceive('selectRaw')->with('ts_rank(searchable,query) AS rank')->andReturnSelf()
+            ->shouldReceive('selectRaw')->with('COUNT(*) OVER () AS total_count')->andReturnSelf()
+            ->shouldReceive('whereRaw')->andReturnSelf()
+            ->shouldReceive('orderBy')->with('rank', 'desc')->andReturnSelf()
+            ->shouldReceive('orderBy')->with('id')->andReturnSelf()
+            ->shouldReceive('toSql');
+
+        return $table;
     }
 }
 

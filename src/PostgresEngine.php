@@ -32,6 +32,11 @@ class PostgresEngine extends Engine
     protected $config = [];
 
     /**
+     * @var \Illuminate\Database\Eloquent\Model
+     */
+    protected $model;
+
+    /**
      * Create a new instance of PostgresEngine.
      *
      * @param \Illuminate\Database\ConnectionResolverInterface $resolver
@@ -195,6 +200,11 @@ class PostgresEngine extends Engine
      */
     protected function performSearch(Builder $builder, $perPage = 0, $page = 1)
     {
+        // We have to preserve the model in order to allow for
+        // correct behavior of mapIds() method which currently
+        // does not revceive a model instance
+        $this->preserveModel($builder->model);
+
         $indexColumn = $this->getIndexColumn($builder->model);
 
         // Build the query
@@ -224,9 +234,19 @@ class PostgresEngine extends Engine
             ->select($query->toSql(), $bindings->all());
     }
 
+    /**
+     * Pluck and return the primary keys of the given results.
+     *
+     * @param mixed $results
+     * @return \Illuminate\Support\Collection
+     */
     public function mapIds($results)
     {
-        return collect($results)->pluck('id')->values()->all();
+        $keyName = $this->model ? $this->model->getKeyName() : 'id';
+
+        return collect($results)
+            ->pluck($keyName)
+            ->values();
     }
 
     /**
@@ -242,11 +262,11 @@ class PostgresEngine extends Engine
             return Collection::make();
         }
 
-        $results = collect($results);
-        
         $keys = $this->mapIds($results);
 
-        $models = $model->whereIn($model->getKeyName(), $keys)
+        $results = collect($results);
+
+        $models = $model->whereIn($model->getKeyName(), $keys->all())
             ->get()
             ->keyBy($model->getKeyName());
 
@@ -427,5 +447,13 @@ class PostgresEngine extends Engine
     protected function config($key, $default = null)
     {
         return array_get($this->config, $key, $default);
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Model $model
+     */
+    protected function preserveModel(Model $model)
+    {
+        $this->model = $model;
     }
 }
