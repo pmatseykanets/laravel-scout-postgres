@@ -4,6 +4,11 @@ All notable changes to `pmatseykanets/laravel-hipchat-slash` will be documented 
 
 ## [Unreleased]
 
+## [0.3.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.3.0) - 2017-01-04
+### Changed
+- Updated to scout 2.0. 
+- Fixed an issue with order by clause when performing a search.
+
 ## [0.2.1](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.2.1) - 2016-12-23
 ### Changed
 - Fixed #2. Cast nulls to empty strings in `toVector()`. 
