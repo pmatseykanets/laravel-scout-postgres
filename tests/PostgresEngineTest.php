@@ -107,7 +107,7 @@ class PostgresEngineTest extends AbstractTestCase
 
         $skip = 0;
         $limit = 5;
-        $table = $this->setDbExpectations($db, $skip, $limit, "'".$searchConfig."'");
+        $table = $this->setDbExpectations($db, $skip, $limit, "'".$searchConfig."',");
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
