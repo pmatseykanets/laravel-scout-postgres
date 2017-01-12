@@ -463,7 +463,7 @@ class PostgresEngine extends Engine
 
     protected function getSearchConfigString()
     {
-        $searchConfig = config('scout.pgsql.search_configuration');
+        $searchConfig = $this->config('search_configuration');
 
         $searchConfigString = '';
         if ($searchConfig !== null) {
