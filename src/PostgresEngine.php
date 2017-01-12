@@ -109,12 +109,7 @@ class PostgresEngine extends Engine
                 return $value === null ? '' : $value;
             });
 
-        $searchConfig = config('scout.pgsql.search_configuration');
-
-        $searchConfigString = '';
-        if ($searchConfig !== null) {
-            $searchConfigString = "'" . $searchConfig . "',";
-        }
+        $searchConfigString = $this->getSearchConfigString();
 
         $select = $fields->keys()
             ->map(function ($key) use ($model) {
@@ -214,12 +209,7 @@ class PostgresEngine extends Engine
 
         $indexColumn = $this->getIndexColumn($builder->model);
 
-        $searchConfig = config('scout.pgsql.search_configuration');
-
-        $searchConfigString = '';
-        if ($searchConfig !== null) {
-            $searchConfigString = "'" . $searchConfig . "',";
-        }
+        $searchConfigString = $this->getSearchConfigString();
 
         // Build the query
         $query = $this->database
@@ -469,5 +459,17 @@ class PostgresEngine extends Engine
     protected function preserveModel(Model $model)
     {
         $this->model = $model;
+    }
+
+    protected function getSearchConfigString()
+    {
+        $searchConfig = config('scout.pgsql.search_configuration');
+
+        $searchConfigString = '';
+        if ($searchConfig !== null) {
+            $searchConfigString = "'".$searchConfig."',";
+        }
+
+        return $searchConfigString;
     }
 }
