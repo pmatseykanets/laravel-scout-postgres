@@ -84,10 +84,33 @@ class PostgresEngineTest extends AbstractTestCase
     {
         list($engine, $db) = $this->getEngine();
 
-        $table = $this->setDbExpectations($db);
+        $skip = 0;
+        $limit = 5;
+        $table = $this->setDbExpectations($db, $skip, $limit);
 
-        $table->shouldReceive('skip')->with(0)->andReturnSelf()
-            ->shouldReceive('limit')->with(5)->andReturnSelf()
+        $table->shouldReceive('skip')->with($skip)->andReturnSelf()
+            ->shouldReceive('limit')->with($limit)->andReturnSelf()
+            ->shouldReceive('where')->with('bar', 1);
+
+        $db->shouldReceive('select')->with(null, ['foo', 1]);
+
+        $builder = new Builder(new TestModel(), 'foo');
+        $builder->where('bar', 1)->take(5);
+
+        $engine->search($builder);
+    }
+
+    public function test_search_configuration()
+    {
+        $searchConfig = 'simple';
+        list($engine, $db) = $this->getEngine(['search_configuration' => $searchConfig]);
+
+        $skip = 0;
+        $limit = 5;
+        $table = $this->setDbExpectations($db, $skip, $limit, "'".$searchConfig."'");
+
+        $table->shouldReceive('skip')->with($skip)->andReturnSelf()
+            ->shouldReceive('limit')->with($limit)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1);
 
         $db->shouldReceive('select')->with(null, ['foo', 1]);
@@ -152,15 +175,15 @@ class PostgresEngineTest extends AbstractTestCase
         return [new PostgresEngine($resolver, $config), $db];
     }
 
-    protected function setDbExpectations($db, $skip = 0, $limit = 5)
+    protected function setDbExpectations($db, $skip = 0, $limit = 5, $searchConfiguration = '')
     {
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
         $db->shouldReceive('raw')
-            ->with('plainto_tsquery( ?) query')
-            ->andReturn('plainto_tsquery( ?) query');
+            ->with("plainto_tsquery($searchConfiguration ?) query")
+            ->andReturn("plainto_tsquery($searchConfiguration ?) query");
 
-        $table->shouldReceive('crossJoin')->with('plainto_tsquery( ?) query')->andReturnSelf()
+        $table->shouldReceive('crossJoin')->with("plainto_tsquery($searchConfiguration ?) query")->andReturnSelf()
             ->shouldReceive('select')->with('id')->andReturnSelf()
             ->shouldReceive('selectRaw')->with('ts_rank(searchable,query) AS rank')->andReturnSelf()
             ->shouldReceive('selectRaw')->with('COUNT(*) OVER () AS total_count')->andReturnSelf()
