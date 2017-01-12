@@ -112,7 +112,7 @@ class PostgresEngine extends Engine
         $searchConfigString = $this->getSearchConfigString();
 
         $select = $fields->keys()
-            ->map(function ($key) use ($model) {
+            ->map(function ($key) use ($model, $searchConfigString) {
                 $vector = "to_tsvector($searchConfigString ?)";
                 if ($label = $this->rankFieldWeightLabel($model, $key)) {
                     $vector = "setweight($vector, '$label')";
