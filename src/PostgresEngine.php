@@ -109,9 +109,16 @@ class PostgresEngine extends Engine
                 return $value === null ? '' : $value;
             });
 
+        $searchConfig = config('scout.pgsql.search_configuration');
+
+        $searchConfigString = '';
+        if ($searchConfig !== null) {
+            $searchConfigString = "'" . $searchConfig . "',";
+        }
+
         $select = $fields->keys()
             ->map(function ($key) use ($model) {
-                $vector = 'to_tsvector(?)';
+                $vector = "to_tsvector($searchConfigString ?)";
                 if ($label = $this->rankFieldWeightLabel($model, $key)) {
                     $vector = "setweight($vector, '$label')";
                 }
@@ -207,10 +214,17 @@ class PostgresEngine extends Engine
 
         $indexColumn = $this->getIndexColumn($builder->model);
 
+        $searchConfig = config('scout.pgsql.search_configuration');
+
+        $searchConfigString = '';
+        if ($searchConfig !== null) {
+            $searchConfigString = "'" . $searchConfig . "',";
+        }
+
         // Build the query
         $query = $this->database
             ->table($builder->index ?: $builder->model->searchableAs())
-            ->crossJoin($this->database->raw('plainto_tsquery(?) query'))
+            ->crossJoin($this->database->raw("plainto_tsquery($searchConfigString ?) query"))
             ->select($builder->model->getKeyName())
             ->selectRaw("{$this->rankingExpression($builder->model, $indexColumn)} AS rank")
             ->selectRaw('COUNT(*) OVER () AS total_count')

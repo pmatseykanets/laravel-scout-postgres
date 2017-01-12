@@ -58,6 +58,8 @@ Specify the database connection that should be used to access indexed documents 
     // You may want to update index documents directly in PostgreSQL (i.e. via triggers).
     // In this case you can set this value to false.
     'maintain_index' => true,
+    // You can override the default text search configuration. Null uses the default.
+    'search_configuration' => null,
 ],
 ...
 ```
@@ -66,7 +68,7 @@ Specify the database connection that should be used to access indexed documents 
 
 ### Configuring PostgreSQL
 
-Make sure that an appropriate [default text search configuration](https://www.postgresql.org/docs/9.5/static/runtime-config-client.html#GUC-DEFAULT-TEXT-SEARCH-CONFIG) is set globbaly (in `postgresql.conf`), for a particular database (`ALTER DATABASE ... SET ...`) or alternatively set `default_text_search_config` in each session.
+Make sure that an appropriate [default text search configuration](https://www.postgresql.org/docs/9.5/static/runtime-config-client.html#GUC-DEFAULT-TEXT-SEARCH-CONFIG) is set globbaly (in `postgresql.conf`), for a particular database (`ALTER DATABASE ... SET default_text_search_config TO ...`) or alternatively set `default_text_search_config` in each session.
 
 To check the current value
 
