@@ -26,7 +26,7 @@ class PostgresEngineTest extends AbstractTestCase
         $db->shouldReceive('query')
             ->andReturn($query = Mockery::mock('stdClass'));
         $query->shouldReceive('selectRaw')
-            ->with("to_tsvector(?) || setweight(to_tsvector(?), 'B') AS tsvector", ['Foo', ''])
+            ->with("to_tsvector( ?) || setweight(to_tsvector( ?), 'B') AS tsvector", ['Foo', ''])
             ->andReturnSelf();
         $query->shouldReceive('value')
             ->with('tsvector')
@@ -157,10 +157,10 @@ class PostgresEngineTest extends AbstractTestCase
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
         $db->shouldReceive('raw')
-            ->with('plainto_tsquery(?) query')
-            ->andReturn('plainto_tsquery(?) query');
+            ->with('plainto_tsquery( ?) query')
+            ->andReturn('plainto_tsquery( ?) query');
 
-        $table->shouldReceive('crossJoin')->with('plainto_tsquery(?) query')->andReturnSelf()
+        $table->shouldReceive('crossJoin')->with('plainto_tsquery( ?) query')->andReturnSelf()
             ->shouldReceive('select')->with('id')->andReturnSelf()
             ->shouldReceive('selectRaw')->with('ts_rank(searchable,query) AS rank')->andReturnSelf()
             ->shouldReceive('selectRaw')->with('COUNT(*) OVER () AS total_count')->andReturnSelf()
