@@ -249,9 +249,8 @@ class TestModel extends Model
 }
 
 class TestWithSoftDeleteModel extends Model
-{
-    use \Illuminate\Database\Eloquent\SoftDeletes;
-    
+{    
+    use \Illuminate\Database\Eloquent\SoftDeletes;    
     public $id = 1;
 
     public $text = 'Foo';
