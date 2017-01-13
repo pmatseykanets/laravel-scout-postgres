@@ -218,7 +218,7 @@ class PostgresEngine extends Engine
             ->orderBy('rank', 'desc')
             ->orderBy($builder->model->getKeyName());
         //if model use soft delete - without trashed
-        if(method_exists($builder->model, 'getDeletedAtColumn')){
+        if(method_exists($builder->model, 'getDeletedAtColumn')) {
             $query->where($builder->model->getDeletedAtColumn(),null);
         }
         if ($perPage > 0) {

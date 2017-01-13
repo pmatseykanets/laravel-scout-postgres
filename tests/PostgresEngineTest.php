@@ -109,6 +109,7 @@ class PostgresEngineTest extends AbstractTestCase
             ->shouldReceive('limit')->with(5)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
             ->shouldReceive('where')->with('deleted_at', null);
+        
         $db->shouldReceive('select')->with(null, ['foo', 1]);
 
         $builder = new Builder(new TestWithSoftDeleteModel(), 'foo');
