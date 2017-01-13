@@ -37,7 +37,7 @@ class PostgresEngineTest extends AbstractTestCase
         $table->shouldReceive('where')
             ->with('id', '=', 1)
             ->andReturnSelf();
-        
+
         $table->shouldReceive('update')
             ->with(['searchable' => 'foo']);
 
@@ -98,18 +98,18 @@ class PostgresEngineTest extends AbstractTestCase
 
         $engine->search($builder);
     }
-    
+
     public function test_search_with_soft_delete()
     {
         list($engine, $db) = $this->getEngine();
-        
+
         $table = $this->setDbExpectations($db);
-        
+
         $table->shouldReceive('skip')->with(0)->andReturnSelf()
             ->shouldReceive('limit')->with(5)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
             ->shouldReceive('where')->with('deleted_at', null);
-        
+
         $db->shouldReceive('select')->with(null, ['foo', 1]);
 
         $builder = new Builder(new TestWithSoftDeleteModel(), 'foo');
@@ -188,7 +188,7 @@ class PostgresEngineTest extends AbstractTestCase
             ->shouldReceive('orderBy')->with('rank', 'desc')->andReturnSelf()
             ->shouldReceive('orderBy')->with('id')->andReturnSelf()
             ->shouldReceive('toSql');
-        
+
         return $table;
     }
 }
@@ -249,8 +249,8 @@ class TestModel extends Model
 }
 
 class TestWithSoftDeleteModel extends Model
-{    
-    use \Illuminate\Database\Eloquent\SoftDeletes;    
+{
+    use \Illuminate\Database\Eloquent\SoftDeletes;
     public $id = 1;
 
     public $text = 'Foo';
