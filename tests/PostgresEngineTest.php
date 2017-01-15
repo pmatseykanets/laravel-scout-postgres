@@ -8,6 +8,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use ScoutEngines\Postgres\PostgresEngine;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngineTest extends AbstractTestCase
@@ -40,6 +41,7 @@ class PostgresEngineTest extends AbstractTestCase
         $table->shouldReceive('where')
             ->with('id', '=', 1)
             ->andReturnSelf();
+
         $table->shouldReceive('update')
             ->with(['searchable' => 'foo']);
 
@@ -152,6 +154,25 @@ class PostgresEngineTest extends AbstractTestCase
         $engine->search($builder);
     }
 
+    public function test_search_with_soft_delete()
+    {
+        list($engine, $db) = $this->getEngine();
+
+        $table = $this->setDbExpectations($db);
+
+        $table->shouldReceive('skip')->with(0)->andReturnSelf()
+            ->shouldReceive('limit')->with(5)->andReturnSelf()
+            ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
+            ->shouldReceive('where')->with('deleted_at', null);
+
+        $db->shouldReceive('select')->with(null, [null, 'foo', 1]);
+
+        $builder = new Builder(new SoftDeletableTestModel(), 'foo');
+        $builder->where('bar', 1)->take(5);
+
+        $engine->search($builder);
+    }
+
     public function test_map_correctly_maps_results_to_models()
     {
         list($engine) = $this->getEngine();
@@ -244,8 +265,6 @@ class TestModel extends Model
 {
     public $id = 1;
 
-//    public $text = 'Foo';
-
     public $searchableOptions = [
         'rank' => [
             'fields' => [
@@ -295,4 +314,9 @@ class TestModel extends Model
     {
         return $this->searchableAdditionalArray;
     }
+}
+
+class SoftDeletableTestModel extends TestModel
+{
+    use SoftDeletes;
 }
