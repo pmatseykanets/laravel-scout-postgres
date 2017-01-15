@@ -27,7 +27,7 @@ class PostgresEngineTest extends AbstractTestCase
             ->andReturn($query = Mockery::mock('stdClass'));
         $query->shouldReceive('selectRaw')
             ->with(
-                "to_tsvector(COALESCE(?, get_current_ts_config()), ?) || setweight(to_tsvector(COALESCE(?, get_current_ts_config()), ?), ?) AS tsvector",
+                'to_tsvector(COALESCE(?, get_current_ts_config()), ?) || setweight(to_tsvector(COALESCE(?, get_current_ts_config()), ?), ?) AS tsvector',
                 [null, 'Foo', null, '', 'B']
             )
             ->andReturnSelf();
@@ -211,11 +211,11 @@ class PostgresEngineTest extends AbstractTestCase
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
         $db->shouldReceive('raw')
-            ->with("plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query")
-            ->andReturn("plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query");
+            ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
+            ->andReturn('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query');
 
         $table->shouldReceive('crossJoin')
-                ->with("plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query")
+                ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
                 ->andReturnSelf()
             ->shouldReceive('select')
                 ->with('id')
