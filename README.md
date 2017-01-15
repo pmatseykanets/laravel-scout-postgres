@@ -58,8 +58,9 @@ Specify the database connection that should be used to access indexed documents 
     // You may want to update index documents directly in PostgreSQL (i.e. via triggers).
     // In this case you can set this value to false.
     'maintain_index' => true,
-    // You can override the default text search configuration. Null uses the default.
-    'search_configuration' => null,
+    // You can explicitly specify what PostgreSQL text search config to use by scout.
+    // Use \dF in psql to see all available configurations in your database.
+    'config' => 'english',
 ],
 ...
 ```
@@ -74,7 +75,6 @@ To check the current value
 
 ```sql
 SHOW default_text_search_config;
-
 ```
 
 ### Prepare the Schema
@@ -121,7 +121,6 @@ public function toSearchableArray()
         'tags' => $this->tags->pluck('tag')->implode(' '),
     ];
 }
-
 ```
 
 ### Configuring the Model
@@ -165,13 +164,16 @@ class Post extends Model
                 // Normalization index. Default 0.
                 'normalization' => 32,
             ],
+            // You can explicitly specify a PostgreSQL text search configuration for the model.
+            // Use \dF in psql to see all available configurationsin your database.
+            'config' => 'simple',
         ];
     }
 }
 ...
 ```
 
-If you decide to keep your Model's index outside of the Model's table you can let engine know that you want to push additional fields in the index table that you can than use to filter the result set by using `where()` with the Scout `Builder`. In this case you'd need to implement `searchableAdditionalArray()` on your Model. Of course the schema for the external table should include these additional columns.
+If you decide to keep your Model's index outside of the Model's table you can let engine know that you want to push additional fields in the index table that you can then use to filter the result set by applying `where()` with the Scout `Builder`. In this case you'd need to implement `searchableAdditionalArray()` on your Model. Of course the schema for the external table should include these additional columns.
 
 ```php
 public function searchableAdditionalArray()
