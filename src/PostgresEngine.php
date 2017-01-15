@@ -109,21 +109,30 @@ class PostgresEngine extends Engine
                 return $value === null ? '' : $value;
             });
 
-        $searchConfigString = $this->getSearchConfigString();
+        $bindings = collect([]);
 
-        $select = $fields->keys()
-            ->map(function ($key) use ($model, $searchConfigString) {
-                $vector = "to_tsvector($searchConfigString ?)";
-                if ($label = $this->rankFieldWeightLabel($model, $key)) {
-                    $vector = "setweight($vector, '$label')";
-                }
+        // The choices of parser, dictionaries and which types of tokens to index are determined
+        // by the selected text search configuration which can be set globally in config/scout.php
+        // file or individually for each model in searchableOptions()
+        // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
+        $vector = "to_tsvector(COALESCE(?, get_current_ts_config()), ?)";
 
-                return $vector;
-            })->implode(' || ');
+        $select = $fields->map(function ($value, $key) use ($model, $vector, $bindings) {
+            $bindings->push($this->searchConfig($model) ?: null)
+                ->push($value);
+
+            // Set a field weight if it was specified in Model's searchableOptions()
+            if ($label = $this->rankFieldWeightLabel($model, $key)) {
+                $vector = "setweight($vector, ?)";
+                $bindings->push($label);
+            }
+
+            return $vector;
+        })->implode(' || ');
 
         return $this->database
             ->query()
-            ->selectRaw("$select AS tsvector", $fields->values()->all())
+            ->selectRaw("$select AS tsvector", $bindings->all())
             ->value('tsvector');
     }
 
@@ -209,12 +218,20 @@ class PostgresEngine extends Engine
 
         $indexColumn = $this->getIndexColumn($builder->model);
 
-        $searchConfigString = $this->getSearchConfigString();
+        $bindings = collect([]);
+
+        // The choices of parser, dictionaries and which types of tokens to index are determined
+        // by the selected text search configuration which can be set globally in config/scout.php
+        // file or individually for each model in searchableOptions()
+        // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
+        $tsQuery = 'plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query';
+        $bindings->push($this->searchConfig($builder->model) ?: null)
+            ->push($builder->query);
 
         // Build the query
         $query = $this->database
             ->table($builder->index ?: $builder->model->searchableAs())
-            ->crossJoin($this->database->raw("plainto_tsquery($searchConfigString ?) query"))
+            ->crossJoin($this->database->raw($tsQuery))
             ->select($builder->model->getKeyName())
             ->selectRaw("{$this->rankingExpression($builder->model, $indexColumn)} AS rank")
             ->selectRaw('COUNT(*) OVER () AS total_count')
@@ -227,8 +244,7 @@ class PostgresEngine extends Engine
                 ->limit($perPage);
         }
 
-        $bindings = collect([$builder->query]);
-
+        // Transfer the where clauses that were set on the builder instance if any
         foreach ($builder->wheres as $key => $value) {
             $query->where($key, $value);
             $bindings->push($value);
@@ -461,15 +477,14 @@ class PostgresEngine extends Engine
         $this->model = $model;
     }
 
-    protected function getSearchConfigString()
+    /**
+     * Returns a search config name for a model.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return string
+     */
+    protected function searchConfig(Model $model)
     {
-        $searchConfig = $this->config('search_configuration');
-
-        $searchConfigString = '';
-        if ($searchConfig !== null) {
-            $searchConfigString = "'".$searchConfig."',";
-        }
-
-        return $searchConfigString;
+        return $this->option($model, 'config', $this->config('config', ''));
     }
 }

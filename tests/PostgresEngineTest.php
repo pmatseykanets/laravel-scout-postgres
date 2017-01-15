@@ -26,7 +26,10 @@ class PostgresEngineTest extends AbstractTestCase
         $db->shouldReceive('query')
             ->andReturn($query = Mockery::mock('stdClass'));
         $query->shouldReceive('selectRaw')
-            ->with("to_tsvector( ?) || setweight(to_tsvector( ?), 'B') AS tsvector", ['Foo', ''])
+            ->with(
+                "to_tsvector(COALESCE(?, get_current_ts_config()), ?) || setweight(to_tsvector(COALESCE(?, get_current_ts_config()), ?), ?) AS tsvector",
+                [null, 'Foo', null, '', 'B']
+            )
             ->andReturnSelf();
         $query->shouldReceive('value')
             ->with('tsvector')
@@ -88,11 +91,17 @@ class PostgresEngineTest extends AbstractTestCase
         $limit = 5;
         $table = $this->setDbExpectations($db, $skip, $limit);
 
-        $table->shouldReceive('skip')->with($skip)->andReturnSelf()
-            ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1);
+        $table->shouldReceive('skip')
+                ->with($skip)
+                ->andReturnSelf()
+            ->shouldReceive('limit')
+                ->with($limit)
+                ->andReturnSelf()
+            ->shouldReceive('where')
+                ->with('bar', 1);
 
-        $db->shouldReceive('select')->with(null, ['foo', 1]);
+        $db->shouldReceive('select')
+            ->with(null, [null, 'foo', 1]);
 
         $builder = new Builder(new TestModel(), 'foo');
         $builder->where('bar', 1)->take(5);
@@ -100,22 +109,44 @@ class PostgresEngineTest extends AbstractTestCase
         $engine->search($builder);
     }
 
-    public function test_search_configuration()
+    public function test_search_with_global_config()
     {
-        $searchConfig = 'simple';
-        list($engine, $db) = $this->getEngine(['search_configuration' => $searchConfig]);
+        list($engine, $db) = $this->getEngine(['config' => 'simple']);
 
         $skip = 0;
         $limit = 5;
-        $table = $this->setDbExpectations($db, $skip, $limit, "'".$searchConfig."',");
+        $table = $this->setDbExpectations($db);
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1);
 
-        $db->shouldReceive('select')->with(null, ['foo', 1]);
+        $db->shouldReceive('select')->with(null, ['simple', 'foo', 1]);
 
         $builder = new Builder(new TestModel(), 'foo');
+        $builder->where('bar', 1)->take(5);
+
+        $engine->search($builder);
+    }
+
+    public function test_search_with_model_config()
+    {
+        list($engine, $db) = $this->getEngine(['config' => 'simple']);
+
+        $skip = 0;
+        $limit = 5;
+        $table = $this->setDbExpectations($db);
+
+        $table->shouldReceive('skip')->with($skip)->andReturnSelf()
+            ->shouldReceive('limit')->with($limit)->andReturnSelf()
+            ->shouldReceive('where')->with('bar', 1);
+
+        $db->shouldReceive('select')->with(null, ['english', 'foo', 1]);
+
+        $model = new TestModel();
+        $model->searchableOptions['config'] = 'english';
+
+        $builder = new Builder($model, 'foo');
         $builder->where('bar', 1)->take(5);
 
         $engine->search($builder);
@@ -175,21 +206,34 @@ class PostgresEngineTest extends AbstractTestCase
         return [new PostgresEngine($resolver, $config), $db];
     }
 
-    protected function setDbExpectations($db, $skip = 0, $limit = 5, $searchConfiguration = '')
+    protected function setDbExpectations($db)
     {
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
         $db->shouldReceive('raw')
-            ->with("plainto_tsquery($searchConfiguration ?) query")
-            ->andReturn("plainto_tsquery($searchConfiguration ?) query");
+            ->with("plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query")
+            ->andReturn("plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query");
 
-        $table->shouldReceive('crossJoin')->with("plainto_tsquery($searchConfiguration ?) query")->andReturnSelf()
-            ->shouldReceive('select')->with('id')->andReturnSelf()
-            ->shouldReceive('selectRaw')->with('ts_rank(searchable,query) AS rank')->andReturnSelf()
-            ->shouldReceive('selectRaw')->with('COUNT(*) OVER () AS total_count')->andReturnSelf()
-            ->shouldReceive('whereRaw')->andReturnSelf()
-            ->shouldReceive('orderBy')->with('rank', 'desc')->andReturnSelf()
-            ->shouldReceive('orderBy')->with('id')->andReturnSelf()
+        $table->shouldReceive('crossJoin')
+                ->with("plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query")
+                ->andReturnSelf()
+            ->shouldReceive('select')
+                ->with('id')
+                ->andReturnSelf()
+            ->shouldReceive('selectRaw')
+                ->with('ts_rank(searchable,query) AS rank')
+                ->andReturnSelf()
+            ->shouldReceive('selectRaw')
+                ->with('COUNT(*) OVER () AS total_count')
+                ->andReturnSelf()
+            ->shouldReceive('whereRaw')
+                ->andReturnSelf()
+            ->shouldReceive('orderBy')
+                ->with('rank', 'desc')
+                ->andReturnSelf()
+            ->shouldReceive('orderBy')
+                ->with('id')
+                ->andReturnSelf()
             ->shouldReceive('toSql');
 
         return $table;
@@ -200,9 +244,9 @@ class TestModel extends Model
 {
     public $id = 1;
 
-    public $text = 'Foo';
+//    public $text = 'Foo';
 
-    protected $searchableOptions = [
+    public $searchableOptions = [
         'rank' => [
             'fields' => [
                 'nullable' => 'B',
@@ -210,7 +254,12 @@ class TestModel extends Model
         ],
     ];
 
-    protected $searchableAdditionalArray = [];
+    public $searchableArray = [
+        'text' => 'Foo',
+        'nullable' => null,
+    ];
+
+    public $searchableAdditionalArray = [];
 
     public function searchableAs()
     {
@@ -234,10 +283,7 @@ class TestModel extends Model
 
     public function toSearchableArray()
     {
-        return [
-            'text' => $this->text,
-            'nullable' => null,
-        ];
+        return $this->searchableArray;
     }
 
     public function searchableOptions()
