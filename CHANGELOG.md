@@ -5,6 +5,7 @@
 ## [0.4.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.4.0) - 2017-01-16
 ### Added
 - Made it possible to specify PostgreSQL search config both globally in scout.php or on per model basis.
+
 ### Changed
 - Fixed #6. Check for models that no longer exist but still present in the index (i.e. soft-deleted models).
 
