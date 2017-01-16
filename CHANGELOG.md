@@ -1,9 +1,12 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.4.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.4.0) - 2017-01-16
 ### Added
-- Configurable PostgreSQL search config.
-- Take care of soft-deleted models. #6
+- Made it possible to specify PostgreSQL search config both globally in scout.php or on per model basis.
+### Changed
+- Fixed #6. Check for models that no longer exist but still present in the index (i.e. soft-deleted models).
 
 ## [0.3.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.3.0) - 2017-01-04
 ### Changed
@@ -18,11 +21,11 @@
 ### Added
 - Implemented `getTotalCount()` method to support length aware pagination. 
 
-### Updated
+### Changed
 - Updated README.md.
 
 ## [0.1.1](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.1.1) - 2016-10-07
-### Updated
+### Changed
 - Updated composer dependencies.
 
 ## [0.1.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.1.0) - 2016-09-02
