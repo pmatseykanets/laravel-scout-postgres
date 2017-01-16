@@ -1,10 +1,9 @@
 # Changelog
 
-All notable changes to `pmatseykanets/laravel-hipchat-slash` will be documented in this file
-
 ## [Unreleased]
 ### Added
-- Configurable PostgreSQL search config
+- Configurable PostgreSQL search config.
+- Take care of soft-deleted models. #6
 
 ## [0.3.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.3.0) - 2017-01-04
 ### Changed
