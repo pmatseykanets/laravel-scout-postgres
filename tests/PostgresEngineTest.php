@@ -154,7 +154,7 @@ class PostgresEngineTest extends AbstractTestCase
         $engine->search($builder);
     }
 
-    public function test_search_with_soft_delete()
+    public function test_search_with_soft_deletes()
     {
         list($engine, $db) = $this->getEngine();
 
@@ -163,7 +163,7 @@ class PostgresEngineTest extends AbstractTestCase
         $table->shouldReceive('skip')->with(0)->andReturnSelf()
             ->shouldReceive('limit')->with(5)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
-            ->shouldReceive('where')->with('deleted_at', null);
+            ->shouldReceive('whereNull')->with('deleted_at');
 
         $db->shouldReceive('select')->with(null, [null, 'foo', 1]);
 
@@ -173,7 +173,7 @@ class PostgresEngineTest extends AbstractTestCase
         $engine->search($builder);
     }
 
-    public function test_map_correctly_maps_results_to_models()
+    public function test_maps_results_to_models()
     {
         list($engine) = $this->getEngine();
 
@@ -186,6 +186,26 @@ class PostgresEngineTest extends AbstractTestCase
             json_decode('[{"id": 1, "rank": 0.33, "total_count": 1}]'), $model);
 
         $this->assertCount(1, $results);
+    }
+
+    public function test_map_filters_out_no_longer_existing_models()
+    {
+        list($engine) = $this->getEngine();
+
+        $model = Mockery::mock('StdClass');
+        $model->shouldReceive('getKeyName')->andReturn('id');
+        $model->shouldReceive('whereIn')->once()->with('id', [1, 2])->andReturn($model);
+
+        $expectedModel = new SoftDeletableTestModel();
+        $expectedModel->id = 2;
+
+        $model->shouldReceive('get')->once()->andReturn(Collection::make([$expectedModel]));
+
+        $models = $engine->map(
+            json_decode('[{"id": 1, "rank": 0.33, "total_count": 2}, {"id": 2, "rank": 0.31, "total_count": 2}]'), $model);
+
+        $this->assertCount(1, $models);
+        $this->assertEquals(2, $models->first()->id);
     }
 
     public function test_it_returns_total_count()

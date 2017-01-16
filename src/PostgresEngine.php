@@ -216,8 +216,6 @@ class PostgresEngine extends Engine
         // does not revceive a model instance
         $this->preserveModel($builder->model);
 
-        $indexColumn = $this->getIndexColumn($builder->model);
-
         $bindings = collect([]);
 
         // The choices of parser, dictionaries and which types of tokens to index are determined
@@ -227,6 +225,8 @@ class PostgresEngine extends Engine
         $tsQuery = 'plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query';
         $bindings->push($this->searchConfig($builder->model) ?: null)
             ->push($builder->query);
+
+        $indexColumn = $this->getIndexColumn($builder->model);
 
         // Build the query
         $query = $this->database
@@ -238,19 +238,24 @@ class PostgresEngine extends Engine
             ->whereRaw("$indexColumn @@ query")
             ->orderBy('rank', 'desc')
             ->orderBy($builder->model->getKeyName());
-        //if model use soft delete - without trashed
-        if (method_exists($builder->model, 'getDeletedAtColumn')) {
-            $query->where($builder->model->getDeletedAtColumn(), null);
-        }
-        if ($perPage > 0) {
-            $query->skip(($page - 1) * $perPage)
-                ->limit($perPage);
-        }
 
         // Transfer the where clauses that were set on the builder instance if any
         foreach ($builder->wheres as $key => $value) {
             $query->where($key, $value);
             $bindings->push($value);
+        }
+
+        // If parsed documents are being stored in the model's table
+        if (! $this->isExternalIndex($builder->model)) {
+            // and the model uses soft deletes we need to exclude trashed rows
+            if ($this->usesSoftDeletes($builder->model)) {
+                $query->whereNull($builder->model->getDeletedAtColumn());
+            }
+        }
+
+        if ($perPage > 0) {
+            $query->skip(($page - 1) * $perPage)
+                ->limit($perPage);
         }
 
         return $this->database
@@ -277,7 +282,7 @@ class PostgresEngine extends Engine
      *
      * @param  mixed $results
      * @param  \Illuminate\Database\Eloquent\Model $model
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     public function map($results, $model)
     {
@@ -293,9 +298,11 @@ class PostgresEngine extends Engine
             ->get()
             ->keyBy($model->getKeyName());
 
-        return $results->map(function ($result) use ($model, $models) {
-            return $models[$result->{$model->getKeyName()}];
-        });
+        return $results->pluck($model->getKeyName())
+            ->intersect($models->keys()) // Filter out no longer existing models (i.e. soft deleted)
+            ->map(function ($key) use ($model, $models) {
+                return $models[$key];
+            });
     }
 
     /**
@@ -489,5 +496,16 @@ class PostgresEngine extends Engine
     protected function searchConfig(Model $model)
     {
         return $this->option($model, 'config', $this->config('config', ''));
+    }
+
+    /**
+     * Checks if the model uses the SoftDeletes trait.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return bool
+     */
+    protected function usesSoftDeletes(Model $model)
+    {
+        return method_exists($model, 'getDeletedAtColumn');
     }
 }
