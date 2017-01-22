@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.4.1](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.4.1) - 2017-01-22
+### Fixed
+- Fixed #7. No longer uses `resolve()` helper to better support Laravel Lumen.
+
 ## [0.4.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.4.0) - 2017-01-16
 ### Added
 - Made it possible to specify PostgreSQL search config both globally in scout.php or on per model basis.
