@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Fixed
+- Fall back to phpunit 4.8.
 
 ## [0.4.1](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.4.1) - 2017-01-22
 ### Fixed
