@@ -14,7 +14,12 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 ## Contents
 
 - [Installation](#installation)
+    - [Scout 1.x](#scout-1x)
+    - [Scout 2.x](#scout-2x)
+    - [Laravel](#laravel)
+    - [Lumen](#lumen)
 - [Configuration](#configuration)
+    - [Configuring the Engine](#configuring-the-engine)
     - [Configuring PostgreSQL](#configuring-postgresql)
     - [Prepare the Schema](#prepare-the-schema)
     - [Configuring Searchable Data](#configuring-searchable-data)
