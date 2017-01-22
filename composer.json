@@ -27,7 +27,7 @@
         "laravel/scout": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "5.*",
+        "phpunit/phpunit": "^4.8",
         "mockery/mockery": "^0.9.5"
     },
     "autoload": {
