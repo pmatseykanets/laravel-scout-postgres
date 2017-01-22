@@ -31,17 +31,18 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 You can install the package via composer:
 
-**For scout 1.x**
+### Scout 1.x
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres:0.2.1
 ```
 
-**For scout 2.x**
+### Scout 2.x
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
 ```
 
-You must install the service provider:
+### Laravel
+Register the service provider:
 
 ```php
 // config/app.php
@@ -50,6 +51,54 @@ You must install the service provider:
     ScoutEngines\Postgres\PostgresEngineServiceProvider::class,
 ],
 ```
+
+### Lumen
+Scout service provider uses `config_path` helper that is not included in the Lumen.
+To fix this include the following snippet either directly in `bootstrap.app` or in your autoloaded helpers file i.e. `app/helpers.php`.
+
+```php
+if (! function_exists('config_path')) {
+    /**
+     * Get the configuration path.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function config_path($path = '')
+    {
+        return app()->basePath() . '/config'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+}
+```
+
+Create the `scout.php` config file in `app/config` folder with the following contents
+```php
+<?php
+
+return [
+    'driver' => env('SCOUT_DRIVER', 'pgsql'),
+    'prefix' => env('SCOUT_PREFIX', ''),
+    'queue' => false,
+    'pgsql' => [
+        'connection' => 'pgsql',
+        'maintain_index' => true,
+        'config' => 'english',
+    ],
+];
+```
+
+Register service providers:
+
+```php
+// bootstrap/app.php
+$app->register(Laravel\Scout\ScoutServiceProvider::class);
+$app->configure('scout');
+$app->register(ScoutEngines\Postgres\PostgresEngineServiceProvider::class);
+```
+
+## Configuration
+
+### Configuring the Engine
 
 Specify the database connection that should be used to access indexed documents in the Laravel Scout configuration file `config/scout.php`:
 
@@ -68,8 +117,6 @@ Specify the database connection that should be used to access indexed documents 
 ],
 ...
 ```
-
-## Configuration
 
 ### Configuring PostgreSQL
 
