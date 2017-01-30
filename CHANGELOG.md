@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.5.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v0.5.0) - 2017-01-30
+### Changed
+- Updated dependencies to support Laravel 5.4 and Scout 3.0
+
 ### Fixed
 - Fall back to phpunit 4.8.
 
