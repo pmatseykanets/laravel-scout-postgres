@@ -1,4 +1,4 @@
-# PostrgeSQL Full Text Search Engine for Laravel Scout [WIP]
+# PostgreSQL Full Text Search Engine for Laravel Scout [WIP]
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
