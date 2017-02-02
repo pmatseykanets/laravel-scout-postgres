@@ -222,7 +222,7 @@ class PostgresEngine extends Engine
         // by the selected text search configuration which can be set globally in config/scout.php
         // file or individually for each model in searchableOptions()
         // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
-        $tsQuery = 'plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query';
+        $tsQuery = 'to_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query';
         $bindings->push($this->searchConfig($builder->model) ?: null)
             ->push($builder->query);
 
