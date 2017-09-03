@@ -21,9 +21,9 @@
     ],
     "require": {
         "php": ">=5.6.4",
-        "illuminate/contracts": "5.3.*|5.4.*",
-        "illuminate/database": "5.3.*|5.4.*",
-        "illuminate/support": "5.3.*|5.4.*",
+        "illuminate/contracts": "5.3.*|5.4.*|5.5.*",
+        "illuminate/database": "5.3.*|5.4.*|5.5.*",
+        "illuminate/support": "5.3.*|5.4.*|5.5.*",
         "laravel/scout": "2.*|3.*"
     },
     "require-dev": {
@@ -42,5 +42,12 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ScoutEngines\\Postgres\\PostgresEngineServiceProvider"
+            ]
+        }
     }
 }
