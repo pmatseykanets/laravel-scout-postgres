@@ -1,4 +1,4 @@
-# PostgreSQL Full Text Search Engine for Laravel Scout [WIP]
+# PostgreSQL Full Text Search Engine for Laravel Scout
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
@@ -15,7 +15,7 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 - [Installation](#installation)
     - [Scout 1.x](#scout-1x)
-    - [Scout 2.x](#scout-2x)
+    - [Scout 2.x, 3.x](#scout-2x-3x)
     - [Laravel](#laravel)
     - [Lumen](#lumen)
 - [Configuration](#configuration)
@@ -41,13 +41,13 @@ You can install the package via composer:
 composer require pmatseykanets/laravel-scout-postgres:0.2.1
 ```
 
-### Scout 2.x
+### Scout 2.x, 3.x
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
 ```
 
 ### Laravel
-Register the service provider:
+If you're using Laravel < 5.5 or if you have package auto-discovery turned off you have to manually register the service provider:
 
 ```php
 // config/app.php
