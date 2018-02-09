@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\ConnectionResolverInterface;
 
-class PostgresEngineTest extends AbstractTestCase
+class PostgresEngineTest extends TestCase
 {
     public function test_it_can_be_instantiated()
     {
