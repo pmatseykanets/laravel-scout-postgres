@@ -91,22 +91,39 @@ class PostgresEngineTest extends TestCase
 
         $skip = 0;
         $limit = 5;
-        $table = $this->setDbExpectations($db, $skip, $limit);
+        $table = $this->setDbExpectations($db);
 
-        $table->shouldReceive('skip')
-                ->with($skip)
-                ->andReturnSelf()
-            ->shouldReceive('limit')
-                ->with($limit)
-                ->andReturnSelf()
-            ->shouldReceive('where')
-                ->with('bar', 1);
+        $table->shouldReceive('skip')->with($skip)->andReturnSelf()
+            ->shouldReceive('limit')->with($limit)->andReturnSelf()
+            ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
+            ->shouldReceive('where')->with('baz', 'qux');
 
         $db->shouldReceive('select')
-            ->with(null, [null, 'foo', 1]);
+            ->with(null, [null, 'foo', 1, 'qux']);
 
         $builder = new Builder(new TestModel(), 'foo');
-        $builder->where('bar', 1)->take(5);
+        $builder->where('bar', 1)
+            ->where('baz', 'qux')
+            ->take(5);
+
+        $engine->search($builder);
+    }
+
+    public function test_search_with_order_by()
+    {
+        list($engine, $db) = $this->getEngine();
+
+        $table = $this->setDbExpectations($db, false);
+
+        $table->shouldReceive('orderBy')->with('bar', 'desc')->andReturnSelf()
+            ->shouldReceive('orderBy')->with('baz', 'asc')->andReturnSelf();
+
+        $db->shouldReceive('select')
+            ->with(null, [null, 'foo']);
+
+        $builder = new Builder(new TestModel(), 'foo');
+        $builder->orderBy('bar', 'desc')
+            ->orderBy('baz', 'asc');
 
         $engine->search($builder);
     }
@@ -247,7 +264,7 @@ class PostgresEngineTest extends TestCase
         return [new PostgresEngine($resolver, $config), $db];
     }
 
-    protected function setDbExpectations($db)
+    protected function setDbExpectations($db, $withDefaultOrderBy = true)
     {
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
@@ -268,14 +285,18 @@ class PostgresEngineTest extends TestCase
                 ->with('COUNT(*) OVER () AS total_count')
                 ->andReturnSelf()
             ->shouldReceive('whereRaw')
-                ->andReturnSelf()
-            ->shouldReceive('orderBy')
-                ->with('rank', 'desc')
-                ->andReturnSelf()
-            ->shouldReceive('orderBy')
-                ->with('id')
-                ->andReturnSelf()
-            ->shouldReceive('toSql');
+                ->andReturnSelf();
+
+        if ($withDefaultOrderBy) {
+            $table->shouldReceive('orderBy')
+                    ->with('rank', 'desc')
+                    ->andReturnSelf()
+                ->shouldReceive('orderBy')
+                    ->with('id')
+                    ->andReturnSelf();
+        }
+
+        $table->shouldReceive('toSql');
 
         return $table;
     }

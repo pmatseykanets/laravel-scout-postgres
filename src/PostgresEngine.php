@@ -235,11 +235,9 @@ class PostgresEngine extends Engine
             ->select($builder->model->getKeyName())
             ->selectRaw("{$this->rankingExpression($builder->model, $indexColumn)} AS rank")
             ->selectRaw('COUNT(*) OVER () AS total_count')
-            ->whereRaw("$indexColumn @@ query")
-            ->orderBy('rank', 'desc')
-            ->orderBy($builder->model->getKeyName());
+            ->whereRaw("$indexColumn @@ query");
 
-        // Transfer the where clauses that were set on the builder instance if any
+        // Apply where clauses that were set on the builder instance if any
         foreach ($builder->wheres as $key => $value) {
             $query->where($key, $value);
             $bindings->push($value);
@@ -251,6 +249,17 @@ class PostgresEngine extends Engine
             if ($this->usesSoftDeletes($builder->model)) {
                 $query->whereNull($builder->model->getDeletedAtColumn());
             }
+        }
+
+        // Apply order by clauses that were set on the builder instance if any
+        foreach ($builder->orders as $order) {
+            $query->orderBy($order['column'], $order['direction']);
+        }
+
+        // Apply default order by clauses (rank and id)
+        if (empty($builder->orders)) {
+            $query->orderBy('rank', 'desc')
+                ->orderBy($builder->model->getKeyName());
         }
 
         if ($perPage > 0) {

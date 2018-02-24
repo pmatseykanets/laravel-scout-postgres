@@ -1,10 +1,16 @@
 # Changelog
 
+## [2.1.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v2.1.0) - 2018-02-23
+
+### Added
+
+- Added support for applying `ORDER BY` clauses set on the builder instance.
+
 ## [2.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v2.0.0) - 2018-02-09
 
 ### Changed
 
-- Switched to Scout 4 (Laravel 5.6) and PHPUnit 7
+- Switched to Scout 4 (Laravel 5.6) and PHPUnit 7.
 
 ## [1.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v1.0.0) - 2017-09-03
 
