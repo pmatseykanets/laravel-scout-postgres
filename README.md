@@ -7,8 +7,6 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
 [![License](https://poser.pugx.org/pmatseykanets/laravel-scout-postgres/license)](https://github.com/pmatseykanets/laravel-scout-postgres/blob/master/LICENSE.md)
 
-
-
 This package makes it easy to use native PostgreSQL Full Text Search capabilities with [Laravel Scout](http://laravel.com/docs/master/scout).
 
 ## Contents
