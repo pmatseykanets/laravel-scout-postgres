@@ -35,7 +35,7 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 You can install the package via composer:
 
-### Scout 4.x (Laravel 5.6)
+### Scout 4.x (Laravel 5.4+)
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
 ```
