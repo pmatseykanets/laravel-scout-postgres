@@ -280,7 +280,6 @@ class PostgresEngine extends Engine
      */
     protected function performSearch(Builder $builder, $perPage = 0, $page = 1)
     {
-
         list($query, $bindings) = $this->buildSearch($builder, $perPage, $page);
 
         return $this->database
