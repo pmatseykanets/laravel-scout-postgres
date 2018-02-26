@@ -202,14 +202,14 @@ class PostgresEngine extends Engine
     }
 
     /**
-     * Perform the given search on the engine.
+     * Build the given search on the engine.
      *
      * @param \Laravel\Scout\Builder $builder
      * @param int|null $perPage
      * @param int $page
-     * @return array
+     * @return array [\Illuminate\Database\Schema\Builder $query, \Illuminate\Support\Collection $bindings]
      */
-    protected function performSearch(Builder $builder, $perPage = 0, $page = 1)
+    public function buildSearch(Builder $builder, $perPage = 0, $page = 1)
     {
         // We have to preserve the model in order to allow for
         // correct behavior of mapIds() method which currently
@@ -266,6 +266,22 @@ class PostgresEngine extends Engine
             $query->skip(($page - 1) * $perPage)
                 ->limit($perPage);
         }
+
+        return [$query, $bindings];
+    }
+
+    /**
+     * Perform the given search on the engine.
+     *
+     * @param \Laravel\Scout\Builder $builder
+     * @param int|null $perPage
+     * @param int $page
+     * @return array
+     */
+    protected function performSearch(Builder $builder, $perPage = 0, $page = 1)
+    {
+
+        list($query, $bindings) = $this->buildSearch($builder, $perPage, $page);
 
         return $this->database
             ->select($query->toSql(), $bindings->all());
