@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v2.2.0) - 2018-02-26
+
+### Fixed
+
+- Downgraded dependency versions to support php 7.0+ and Laravel 5.4+
+
 ## [2.1.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v2.1.0) - 2018-02-23
 
 ### Added
