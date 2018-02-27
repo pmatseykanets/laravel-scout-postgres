@@ -212,8 +212,6 @@ class PostgresEngine extends Engine
      *
      * @param  \Closure  $closure
      * @return void
-     *
-     * @throws \InvalidArgumentException
      */
     public function extendQuery(Closure $closure)
     {
