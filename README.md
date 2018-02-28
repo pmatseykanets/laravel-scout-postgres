@@ -93,6 +93,7 @@ return [
         'connection' => 'pgsql',
         'maintain_index' => true,
         'config' => 'english',
+        'unaccent' => false,
     ],
 ];
 ```
@@ -124,6 +125,9 @@ Specify the database connection that should be used to access indexed documents 
     // You can explicitly specify what PostgreSQL text search config to use by scout.
     // Use \dF in psql to see all available configurations in your database.
     'config' => 'english',
+    // See configuration instructions bellow
+    // For more information see https://www.postgresql.org/docs/current/static/unaccent.html
+    'unaccent' => false
 ],
 ...
 ```
@@ -137,6 +141,16 @@ To check the current value
 ```sql
 SHOW default_text_search_config;
 ```
+
+If the `unaccent`option is `true` you will need to create the extension.  
+```php
+// On the up() function of a migration
+DB::statement('CREATE EXTENSION unaccent');
+// And on the down function
+DB::statement('DROP EXTENSION IF EXISTS unaccent');
+```
+
+This options
 
 ### Prepare the Schema
 
@@ -154,13 +168,13 @@ class CreatePostsTable extends Migration
             $table->integer('user_id');
             $table->timestamps();
         });
-    
+
         DB::statement('ALTER TABLE posts ADD searchable tsvector NULL');
         DB::statement('CREATE INDEX posts_searchable_index ON posts USING GIN (searchable)');
         // Or alternatively
         // DB::statement('CREATE INDEX posts_searchable_index ON posts USING GIST (searchable)');
     }
-    
+
     public function down()
     {
         Schema::drop('posts');

@@ -115,7 +115,11 @@ class PostgresEngine extends Engine
         // by the selected text search configuration which can be set globally in config/scout.php
         // file or individually for each model in searchableOptions()
         // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
-        $vector = 'to_tsvector(COALESCE(?, get_current_ts_config()), ?)';
+        if ($this->config('unaccent') === true) {
+            $vector = 'to_tsvector(COALESCE(?, get_current_ts_config()), unaccent(?))';
+        } else {
+            $vector = 'to_tsvector(COALESCE(?, get_current_ts_config()), ?)';
+        }
 
         $select = $fields->map(function ($value, $key) use ($model, $vector, $bindings) {
             $bindings->push($this->searchConfig($model) ?: null)
