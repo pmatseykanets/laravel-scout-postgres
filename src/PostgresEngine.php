@@ -6,10 +6,10 @@ use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\ConnectionResolverInterface;
-use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
-use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
 use ScoutEngines\Postgres\TsQuery\ToTsQuery;
+use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
+use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
+use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngine extends Engine
 {
