@@ -12,17 +12,17 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 ## Contents
 
 - [Installation](#installation)
-    - [Scout 4.x](#scout-4x)
-    - [Scout 2.x, 3.x](#scout-2x-3x)
-    - [Scout 1.x](#scout-1x)
-    - [Laravel](#laravel)
-    - [Lumen](#lumen)
+  - [Scout 4.x](#scout-4x)
+  - [Scout 2.x, 3.x](#scout-2x-3x)
+  - [Scout 1.x](#scout-1x)
+  - [Laravel](#laravel)
+  - [Lumen](#lumen)
 - [Configuration](#configuration)
-    - [Configuring the Engine](#configuring-the-engine)
-    - [Configuring PostgreSQL](#configuring-postgresql)
-    - [Prepare the Schema](#prepare-the-schema)
-    - [Configuring Searchable Data](#configuring-searchable-data)
-    - [Configuring the Model](#configuring-the-model)
+  - [Configuring the Engine](#configuring-the-engine)
+  - [Configuring PostgreSQL](#configuring-postgresql)
+  - [Prepare the Schema](#prepare-the-schema)
+  - [Configuring Searchable Data](#configuring-searchable-data)
+  - [Configuring the Model](#configuring-the-model)
 - [Usage](#usage)
 - [Testing](#testing)
 - [Security](#security)
@@ -36,22 +36,26 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 You can install the package via composer:
 
 ### Scout 4.x (Laravel 5.4+)
+
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
 ```
 
 ### Scout 2.x, 3.x
+
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres:1.0.0
 ```
 
 ### Scout 1.x
+
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres:0.2.1
 ```
 
 
 ### Laravel
+
 If you're using Laravel < 5.5 or if you have package auto-discovery turned off you have to manually register the service provider:
 
 ```php
@@ -63,6 +67,7 @@ If you're using Laravel < 5.5 or if you have package auto-discovery turned off y
 ```
 
 ### Lumen
+
 Scout service provider uses `config_path` helper that is not included in the Lumen.
 To fix this include the following snippet either directly in `bootstrap.app` or in your autoloaded helpers file i.e. `app/helpers.php`.
 
@@ -82,6 +87,7 @@ if (! function_exists('config_path')) {
 ```
 
 Create the `scout.php` config file in `app/config` folder with the following contents
+
 ```php
 <?php
 
@@ -124,6 +130,10 @@ Specify the database connection that should be used to access indexed documents 
     // You can explicitly specify what PostgreSQL text search config to use by scout.
     // Use \dF in psql to see all available configurations in your database.
     'config' => 'english',
+    // You may set the default querying method
+    // Possible values: plainquery, phrasequery, tsquery
+    // plainquery is used if this option is omitted.
+    'search_using' => 'tsquery'
 ],
 ...
 ```
@@ -154,13 +164,13 @@ class CreatePostsTable extends Migration
             $table->integer('user_id');
             $table->timestamps();
         });
-    
+
         DB::statement('ALTER TABLE posts ADD searchable tsvector NULL');
         DB::statement('CREATE INDEX posts_searchable_index ON posts USING GIN (searchable)');
         // Or alternatively
         // DB::statement('CREATE INDEX posts_searchable_index ON posts USING GIST (searchable)');
     }
-    
+
     public function down()
     {
         Schema::drop('posts');
@@ -193,7 +203,7 @@ class Post extends Model
 {
     use Searchable;
 
-	...
+    // ...
     public function searchableOptions()
     {
         return [
@@ -244,7 +254,9 @@ public function searchableAdditionalArray()
     ];
 }
 ```
+
 You may want to make your searchable column hidden so it's not standing in your way
+
 ```php
 protected $hidden = [
     'searchable',
@@ -255,11 +267,10 @@ protected $hidden = [
 
 Please see the [official documentation](http://laravel.com/docs/master/scout) on how to use Laravel Scout.
 
-
 ## Testing
 
 ``` bash
-$ composer test
+composer test
 ```
 
 ## Security
