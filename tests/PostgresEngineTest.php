@@ -269,11 +269,11 @@ class PostgresEngineTest extends TestCase
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
         $db->shouldReceive('raw')
-            ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
-            ->andReturn('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query');
+            ->with('to_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
+            ->andReturn('to_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query');
 
         $table->shouldReceive('crossJoin')
-                ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
+                ->with('to_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
                 ->andReturnSelf()
             ->shouldReceive('select')
                 ->with('id')
