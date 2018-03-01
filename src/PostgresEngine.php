@@ -285,7 +285,10 @@ class PostgresEngine extends Engine
         }
 
         if ($this->queryClosure instanceof Closure) {
-            $this->queryClosure->call($this, $query, $bindings);
+            $this->queryClosure->call($this, $query);
+            foreach ($query->getBindings() as $binding) {
+                $bindings->push($binding);
+            }
         }
 
         return $this->database
