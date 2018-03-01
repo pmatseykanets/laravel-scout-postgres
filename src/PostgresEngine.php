@@ -2,6 +2,7 @@
 
 namespace ScoutEngines\Postgres;
 
+use Closure;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,11 @@ class PostgresEngine extends Engine
      * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
+
+    /**
+     * @var \Closure
+     */
+    protected $queryClosure;
 
     /**
      * Create a new instance of PostgresEngine.
@@ -202,6 +208,17 @@ class PostgresEngine extends Engine
     }
 
     /**
+     * "Extend" the SQL search query.
+     *
+     * @param  \Closure  $closure
+     * @return void
+     */
+    public function extendQuery(Closure $closure)
+    {
+        $this->queryClosure = $closure;
+    }
+
+    /**
      * Perform the given search on the engine.
      *
      * @param \Laravel\Scout\Builder $builder
@@ -265,6 +282,13 @@ class PostgresEngine extends Engine
         if ($perPage > 0) {
             $query->skip(($page - 1) * $perPage)
                 ->limit($perPage);
+        }
+
+        if ($this->queryClosure instanceof Closure) {
+            $this->queryClosure->call($this, $query);
+            foreach ($query->getBindings() as $binding) {
+                $bindings->push($binding);
+            }
         }
 
         return $this->database
