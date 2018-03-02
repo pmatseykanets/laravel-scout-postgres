@@ -200,7 +200,7 @@ class PostgresEngineTest extends TestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([new TestModel()]));
 
         $results = $engine->map(
-            json_decode('[{"id": 1, "rank": 0.33, "total_count": 1}]'), $model);
+            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 1}]'), $model);
 
         $this->assertCount(1, $results);
     }
@@ -219,7 +219,7 @@ class PostgresEngineTest extends TestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([$expectedModel]));
 
         $models = $engine->map(
-            json_decode('[{"id": 1, "rank": 0.33, "total_count": 2}, {"id": 2, "rank": 0.31, "total_count": 2}]'), $model);
+            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 2}, {"id": 2, "tsrank": 0.31, "total_count": 2}]'), $model);
 
         $this->assertCount(1, $models);
         $this->assertEquals(2, $models->first()->id);
@@ -230,7 +230,7 @@ class PostgresEngineTest extends TestCase
         list($engine) = $this->getEngine();
 
         $count = $engine->getTotalCount(
-            json_decode('[{"id": 1, "rank": 0.33, "total_count": 100}]')
+            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 100}]')
         );
 
         $this->assertEquals(100, $count);
@@ -269,17 +269,17 @@ class PostgresEngineTest extends TestCase
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
         $db->shouldReceive('raw')
-            ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
-            ->andReturn('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query');
+            ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"')
+            ->andReturn('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"');
 
         $table->shouldReceive('crossJoin')
-                ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query')
+                ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"')
                 ->andReturnSelf()
             ->shouldReceive('select')
                 ->with('id')
                 ->andReturnSelf()
             ->shouldReceive('selectRaw')
-                ->with('ts_rank(searchable,query) AS rank')
+                ->with('ts_rank(searchable,"tsquery") AS rank')
                 ->andReturnSelf()
             ->shouldReceive('selectRaw')
                 ->with('COUNT(*) OVER () AS total_count')

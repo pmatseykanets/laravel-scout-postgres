@@ -6,6 +6,9 @@ use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use ScoutEngines\Postgres\TsQuery\ToTsQuery;
+use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
+use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
 use Illuminate\Database\ConnectionResolverInterface;
 
 class PostgresEngine extends Engine
@@ -155,7 +158,7 @@ class PostgresEngine extends Engine
 
         $ids = $models->pluck($key)->all();
 
-        return $this->database
+        $this->database
             ->table($model->searchableAs())
             ->whereIn($key, $ids)
             ->update([$indexColumn => null]);
@@ -213,29 +216,20 @@ class PostgresEngine extends Engine
     {
         // We have to preserve the model in order to allow for
         // correct behavior of mapIds() method which currently
-        // does not revceive a model instance
+        // does not receive a model instance
         $this->preserveModel($builder->model);
 
         $bindings = collect([]);
 
-        // The choices of parser, dictionaries and which types of tokens to index are determined
-        // by the selected text search configuration which can be set globally in config/scout.php
-        // file or individually for each model in searchableOptions()
-        // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
-        $tsQuery = 'plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS query';
-        $bindings->push($this->searchConfig($builder->model) ?: null)
-            ->push($builder->query);
-
         $indexColumn = $this->getIndexColumn($builder->model);
 
-        // Build the query
+        // Build the SQL query
         $query = $this->database
             ->table($builder->index ?: $builder->model->searchableAs())
-            ->crossJoin($this->database->raw($tsQuery))
             ->select($builder->model->getKeyName())
             ->selectRaw("{$this->rankingExpression($builder->model, $indexColumn)} AS rank")
             ->selectRaw('COUNT(*) OVER () AS total_count')
-            ->whereRaw("$indexColumn @@ query");
+            ->whereRaw("$indexColumn @@ \"tsquery\"");
 
         // Apply where clauses that were set on the builder instance if any
         foreach ($builder->wheres as $key => $value) {
@@ -267,8 +261,43 @@ class PostgresEngine extends Engine
                 ->limit($perPage);
         }
 
+        // The choices of parser, dictionaries and which types of tokens to index are determined
+        // by the selected text search configuration which can be set globally in config/scout.php
+        // file or individually for each model in searchableOptions()
+        // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
+        $tsQuery = $builder->callback
+            ? call_user_func($builder->callback, $builder, $this->searchConfig($builder->model))
+            : $this->defaultQueryMethod($builder->query, $this->searchConfig($builder->model));
+
+        $query->crossJoin($this->database->raw($tsQuery->sql().' AS "tsquery"'));
+
+        // Transfer bindings
+        foreach ($tsQuery->bindings() as $binding) {
+            $bindings->prepend($binding);
+        }
+
         return $this->database
             ->select($query->toSql(), $bindings->all());
+    }
+
+    /**
+     * Returns the default query method.
+     *
+     * @param string $query
+     * @param string $config
+     * @return \ScoutEngines\Postgres\TsQuery\TsQueryable
+     */
+    public function defaultQueryMethod($query, $config)
+    {
+        switch (strtolower($this->config('search_using', 'plain'))) {
+            case 'tsquery':
+                return new ToTsQuery($query, $config);
+            case 'phrasequery':
+                return new PhraseToTsQuery($query, $config);
+            case 'plainquery':
+            default:
+                return new PlainToTsQuery($query, $config);
+        }
     }
 
     /**
@@ -345,7 +374,7 @@ class PostgresEngine extends Engine
      */
     protected function rankingExpression(Model $model, $indexColumn)
     {
-        $args = collect([$indexColumn, 'query']);
+        $args = collect([$indexColumn, '"tsquery"']);
 
         if ($weights = $this->rankWeights($model)) {
             $args->prepend("'$weights'");
@@ -504,7 +533,7 @@ class PostgresEngine extends Engine
      */
     protected function searchConfig(Model $model)
     {
-        return $this->option($model, 'config', $this->config('config', ''));
+        return $this->option($model, 'config', $this->config('config', '')) ?: null;
     }
 
     /**
