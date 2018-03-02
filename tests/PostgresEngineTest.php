@@ -96,10 +96,11 @@ class PostgresEngineTest extends TestCase
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
-            ->shouldReceive('where')->with('baz', 'qux');
+            ->shouldReceive('where')->with('baz', 'qux')
+            ->shouldReceive('getBindings')->andReturn([null, 'foo', 1, 'qux']);
 
         $db->shouldReceive('select')
-            ->with(null, [null, 'foo', 1, 'qux']);
+            ->with(null, $table->getBindings());
 
         $builder = new Builder(new TestModel(), 'foo');
         $builder->where('bar', 1)
@@ -116,10 +117,11 @@ class PostgresEngineTest extends TestCase
         $table = $this->setDbExpectations($db, false);
 
         $table->shouldReceive('orderBy')->with('bar', 'desc')->andReturnSelf()
-            ->shouldReceive('orderBy')->with('baz', 'asc')->andReturnSelf();
+            ->shouldReceive('orderBy')->with('baz', 'asc')->andReturnSelf()
+            ->shouldReceive('getBindings')->andReturn([null, 'foo']);
 
         $db->shouldReceive('select')
-            ->with(null, [null, 'foo']);
+            ->with(null, $table->getBindings());
 
         $builder = new Builder(new TestModel(), 'foo');
         $builder->orderBy('bar', 'desc')
@@ -138,9 +140,10 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1);
+            ->shouldReceive('where')->with('bar', 1)
+            ->shouldReceive('getBindings')->andReturn(['simple', 'foo', 1]);
 
-        $db->shouldReceive('select')->with(null, ['simple', 'foo', 1]);
+        $db->shouldReceive('select')->with(null, $table->getBindings());
 
         $builder = new Builder(new TestModel(), 'foo');
         $builder->where('bar', 1)->take(5);
@@ -158,9 +161,10 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1);
+            ->shouldReceive('where')->with('bar', 1)
+            ->shouldReceive('getBindings')->andReturn(['english', 'foo', 1]);
 
-        $db->shouldReceive('select')->with(null, ['english', 'foo', 1]);
+        $db->shouldReceive('select')->with(null, $table->getBindings());
 
         $model = new TestModel();
         $model->searchableOptions['config'] = 'english';
@@ -180,9 +184,10 @@ class PostgresEngineTest extends TestCase
         $table->shouldReceive('skip')->with(0)->andReturnSelf()
             ->shouldReceive('limit')->with(5)->andReturnSelf()
             ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
-            ->shouldReceive('whereNull')->with('deleted_at');
+            ->shouldReceive('whereNull')->with('deleted_at')
+            ->shouldReceive('getBindings')->andReturn([null, 'foo', 1]);
 
-        $db->shouldReceive('select')->with(null, [null, 'foo', 1]);
+        $db->shouldReceive('select')->with(null, $table->getBindings());
 
         $builder = new Builder(new SoftDeletableTestModel(), 'foo');
         $builder->where('bar', 1)->take(5);
@@ -240,7 +245,8 @@ class PostgresEngineTest extends TestCase
     {
         list($engine, $db) = $this->getEngine();
 
-        $this->setDbExpectations($db);
+        $table = $this->setDbExpectations($db);
+        $table->shouldReceive('getBindings')->andReturn([null, 'foo']);
 
         $db->shouldReceive('select')
             ->andReturn(json_decode('[{"id": 1}, {"id": 2}]'));
@@ -274,6 +280,9 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('crossJoin')
                 ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"')
+                ->andReturnSelf()
+            ->shouldReceive('addBinding')
+                ->with(Mockery::type('array'), 'join')
                 ->andReturnSelf()
             ->shouldReceive('select')
                 ->with('id')
