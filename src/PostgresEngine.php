@@ -267,6 +267,7 @@ class PostgresEngine extends Engine
             : $this->defaultQueryMethod($builder->query, $this->searchConfig($builder->model));
 
         $query->crossJoin($this->database->raw($tsQuery->sql().' AS "tsquery"'));
+        // Add TS bindings to the query
         $query->addBinding($tsQuery->bindings(), 'join');
 
         return $this->database
