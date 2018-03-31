@@ -219,8 +219,6 @@ class PostgresEngine extends Engine
         // does not receive a model instance
         $this->preserveModel($builder->model);
 
-        $bindings = collect([]);
-
         $indexColumn = $this->getIndexColumn($builder->model);
 
         // Build the SQL query
@@ -234,7 +232,6 @@ class PostgresEngine extends Engine
         // Apply where clauses that were set on the builder instance if any
         foreach ($builder->wheres as $key => $value) {
             $query->where($key, $value);
-            $bindings->push($value);
         }
 
         // If parsed documents are being stored in the model's table
@@ -270,14 +267,11 @@ class PostgresEngine extends Engine
             : $this->defaultQueryMethod($builder->query, $this->searchConfig($builder->model));
 
         $query->crossJoin($this->database->raw($tsQuery->sql().' AS "tsquery"'));
-
-        // Transfer bindings
-        foreach ($tsQuery->bindings() as $binding) {
-            $bindings->prepend($binding);
-        }
+        // Add TS bindings to the query
+        $query->addBinding($tsQuery->bindings(), 'join');
 
         return $this->database
-            ->select($query->toSql(), $bindings->all());
+            ->select($query->toSql(), $query->getBindings());
     }
 
     /**

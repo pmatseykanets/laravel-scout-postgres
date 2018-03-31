@@ -54,6 +54,6 @@ abstract class BaseTsQueryable implements TsQueryable
      */
     public function bindings()
     {
-        return [$this->query, $this->config];
+        return [$this->config, $this->query];
     }
 }
