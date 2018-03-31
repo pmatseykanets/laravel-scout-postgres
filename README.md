@@ -265,6 +265,24 @@ protected $hidden = [
 
 ## Usage
 
+```php
+// plainto_tsquery()
+$results = App\Post::search('cat rat')->usingPlainQuery()->get()
+
+// plainto_tsquery()
+$results = App\Post::search('cat rat')->usingPhraseQuery()->get()
+
+// to_tsquery()
+$results = App\Post::search('fat & (cat | rat)')->usingTsQuery()->get()
+
+// DIY using a callback
+use ScoutEngines\Postgres\TsQuery\ToTsQuery;
+
+$results = App\Post::search('fat & (cat | rat)', function ($builder, $config) {
+    return new ToTsQuery($builder->query, $config);
+})->get();
+```
+
 Please see the [official documentation](http://laravel.com/docs/master/scout) on how to use Laravel Scout.
 
 ## Testing
