@@ -263,7 +263,7 @@ class PostgresEngine extends Engine
         // file or individually for each model in searchableOptions()
         // See https://www.postgresql.org/docs/current/static/textsearch-controls.html
         $tsQuery = $builder->callback
-            ? call_user_func($builder->callback, $builder, $this->searchConfig($builder->model))
+            ? call_user_func($builder->callback, $builder, $this->searchConfig($builder->model), $query)
             : $this->defaultQueryMethod($builder->query, $this->searchConfig($builder->model));
 
         $query->crossJoin($this->database->raw($tsQuery->sql().' AS "tsquery"'));
