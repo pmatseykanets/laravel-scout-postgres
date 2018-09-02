@@ -205,7 +205,10 @@ class PostgresEngineTest extends TestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([new TestModel()]));
 
         $results = $engine->map(
-            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 1}]'), $model);
+            new Builder(new TestModel, 'foo'),
+            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 1}]'),
+            $model
+        );
 
         $this->assertCount(1, $results);
     }
@@ -224,7 +227,10 @@ class PostgresEngineTest extends TestCase
         $model->shouldReceive('get')->once()->andReturn(Collection::make([$expectedModel]));
 
         $models = $engine->map(
-            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 2}, {"id": 2, "tsrank": 0.31, "total_count": 2}]'), $model);
+            new Builder(new TestModel, 'foo'),
+            json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 2}, {"id": 2, "tsrank": 0.31, "total_count": 2}]'),
+            $model
+        );
 
         $this->assertCount(1, $models);
         $this->assertEquals(2, $models->first()->id);

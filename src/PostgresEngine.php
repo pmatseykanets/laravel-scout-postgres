@@ -312,11 +312,12 @@ class PostgresEngine extends Engine
     /**
      * Map the given results to instances of the given model.
      *
-     * @param  mixed $results
-     * @param  \Illuminate\Database\Eloquent\Model $model
-     * @return \Illuminate\Support\Collection
+     * @param  \Laravel\Scout\Builder  $builder
+     * @param  mixed  $results
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function map($results, $model)
+    public function map(Builder $builder, $results, $model)
     {
         if (empty($results)) {
             return Collection::make();
