@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.1](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v3.0.1) - 2018-09-02
+
+### Changed
+
+- Fix composer.json
+
 ## [3.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v3.0.0) - 2018-09-02
 
 ### Changed
