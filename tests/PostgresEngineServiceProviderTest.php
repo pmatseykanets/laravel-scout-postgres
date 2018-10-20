@@ -7,12 +7,8 @@ use Laravel\Scout\Builder;
 use Laravel\Scout\EngineManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Config\Repository;
-use ScoutEngines\Postgres\TsQuery\ToTsQuery;
 use Illuminate\Contracts\Foundation\Application;
-use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
-use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
 use Illuminate\Database\ConnectionResolverInterface;
-use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 use ScoutEngines\Postgres\PostgresEngineServiceProvider;
 
 class PostgresEngineServiceProviderTest extends TestCase
