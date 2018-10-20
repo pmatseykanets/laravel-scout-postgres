@@ -8,13 +8,17 @@ use Illuminate\Support\ServiceProvider;
 use ScoutEngines\Postgres\TsQuery\ToTsQuery;
 use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
 use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
+use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 
 class PostgresEngineServiceProvider extends ServiceProvider
 {
     public function boot()
     {
         $this->app->make(EngineManager::class)->extend('pgsql', function () {
-            return new PostgresEngine($this->app['db'], $this->app['config']->get('scout.pgsql', []));
+            return new PostgresEngine(
+                $this->app->get('db'),
+                $this->app->get('config')->get('scout.pgsql', [])
+            );
         });
 
         if (! Builder::hasMacro('usingPhraseQuery')) {
@@ -41,6 +45,16 @@ class PostgresEngineServiceProvider extends ServiceProvider
             Builder::macro('usingTsQuery', function () {
                 $this->callback = function ($builder, $config) {
                     return new ToTsQuery($builder->query, $config);
+                };
+
+                return $this;
+            });
+        }
+
+        if (! Builder::hasMacro('usingWebSearchQuery')) {
+            Builder::macro('usingWebSearchQuery', function () {
+                $this->callback = function ($builder, $config) {
+                    return new WebSearchToTsQuery($builder->query, $config);
                 };
 
                 return $this;
