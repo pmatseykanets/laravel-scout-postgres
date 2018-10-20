@@ -2,7 +2,6 @@
 
 namespace ScoutEngines\Postgres\Test;
 
-
 use Mockery;
 use Laravel\Scout\Builder;
 use Laravel\Scout\EngineManager;
