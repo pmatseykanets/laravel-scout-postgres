@@ -273,13 +273,21 @@ protected $hidden = [
 
 ```php
 // plainto_tsquery()
-$results = App\Post::search('cat rat')->usingPlainQuery()->get()
+$posts = App\Post::search('cat rat')
+    ->usingPlainQuery()->get()
 
-// plainto_tsquery()
-$results = App\Post::search('cat rat')->usingPhraseQuery()->get()
+// phraseto_tsquery()
+$posts = App\Post::search('cat rat')
+    ->usingPhraseQuery()->get()
 
 // to_tsquery()
-$results = App\Post::search('fat & (cat | rat)')->usingTsQuery()->get()
+$posts = App\Post::search('fat & (cat | rat)')
+    ->usingTsQuery()->get()
+
+// websearch_to_tsquery()
+// uses web search syntax 
+$posts = App\Post::search('"sad cat" or "fat rat" -mouse')
+    ->usingWebSearchQuery()->get()
 
 // DIY using a callback
 use ScoutEngines\Postgres\TsQuery\ToTsQuery;
