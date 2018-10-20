@@ -12,6 +12,16 @@ use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 
 class PostgresEngineServiceProvider extends ServiceProvider
 {
+    public static function builderMacros()
+    {
+        return [
+            'usingPhraseQuery' => PhraseToTsQuery::class,
+            'usingPlainQuery' => PlainToTsQuery::class,
+            'usingTsQuery' => ToTsQuery::class,
+            'usingWebSearchQuery' => WebSearchToTsQuery::class,
+        ];
+    }
+
     public function boot()
     {
         $this->app->make(EngineManager::class)->extend('pgsql', function () {
@@ -21,40 +31,17 @@ class PostgresEngineServiceProvider extends ServiceProvider
             );
         });
 
-        if (! Builder::hasMacro('usingPhraseQuery')) {
-            Builder::macro('usingPhraseQuery', function () {
-                $this->callback = function ($builder, $config) {
-                    return new PhraseToTsQuery($builder->query, $config);
-                };
-
-                return $this;
-            });
+        foreach (self::builderMacros() as $macro => $class) {
+            $this->registerBuilderMacro($macro, $class);
         }
+    }
 
-        if (! Builder::hasMacro('usingPlainQuery')) {
-            Builder::macro('usingPlainQuery', function () {
-                $this->callback = function ($builder, $config) {
-                    return new PlainToTsQuery($builder->query, $config);
-                };
-
-                return $this;
-            });
-        }
-
-        if (! Builder::hasMacro('usingTsQuery')) {
-            Builder::macro('usingTsQuery', function () {
-                $this->callback = function ($builder, $config) {
-                    return new ToTsQuery($builder->query, $config);
-                };
-
-                return $this;
-            });
-        }
-
-        if (! Builder::hasMacro('usingWebSearchQuery')) {
-            Builder::macro('usingWebSearchQuery', function () {
-                $this->callback = function ($builder, $config) {
-                    return new WebSearchToTsQuery($builder->query, $config);
+    protected function registerBuilderMacro($name, $class)
+    {
+        if (! Builder::hasMacro($name)) {
+            Builder::macro($name, function () use ($class) {
+                $this->callback = function ($builder, $config) use ($class) {
+                    return new $class($builder->query, $config);
                 };
 
                 return $this;

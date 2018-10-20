@@ -30,15 +30,10 @@ class PostgresEngineServiceProviderTest extends TestCase
 
         $builder = new Builder(Mockery::mock(Model::class), '');
 
-        foreach ([
-             'usingPhraseQuery' => PhraseToTsQuery::class,
-             'usingPlainQuery' => PlainToTsQuery::class,
-             'usingTsQuery' => ToTsQuery::class,
-             'usingWebSearchQuery' => WebSearchToTsQuery::class,
-        ] as $macro => $class) {
-            $this->assertTrue(Builder::hasMacro($macro));
+        foreach (PostgresEngineServiceProvider::builderMacros() as $name => $class) {
+            $this->assertTrue(Builder::hasMacro($name));
 
-            $callback = $builder->{$macro}()->callback;
+            $callback = $builder->{$name}()->callback;
             $tsFunction = $callback($builder, []);
             $this->assertInstanceOf($class, $tsFunction);
         }
