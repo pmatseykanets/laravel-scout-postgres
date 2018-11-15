@@ -12,10 +12,6 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 ## Contents
 
 - [Installation](#installation)
-  - [Scout 5](#scout-5)
-  - [Scout 4](#scout-4)
-  - [Scout 2, 3](#scout-2-3)
-  - [Scout 1](#scout-1)
   - [Laravel](#laravel)
   - [Lumen](#lumen)
 - [Configuration](#configuration)
@@ -36,25 +32,31 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 You can install the package via composer:
 
-### Scout 5
+**Scout 6**
 
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
 ```
 
-### Scout 4
+**Scout 5**
+
+``` bash
+composer require pmatseykanets/laravel-scout-postgres:3.1.0
+```
+
+**Scout 4**
 
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres:2.3.0
 ```
 
-### Scout 2, 3
+**Scout 2, 3**
 
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres:1.0.0
 ```
 
-### Scout 1
+**Scout 1**
 
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres:0.2.1

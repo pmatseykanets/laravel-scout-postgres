@@ -74,15 +74,32 @@ class PostgresEngineTest extends TestCase
     {
         list($engine, $db) = $this->getEngine(['maintain_index' => false]);
 
-        $db->shouldReceive('table')
-            ->andReturn($table = Mockery::mock('stdClass'));
-        $table->shouldReceive('whereIn')
-            ->with('id', [1])
-            ->andReturnSelf();
-        $table->shouldReceive('update')
-            ->with(['searchable' => null]);
+        $db->shouldNotReceive('table');
 
         $engine->delete(Collection::make([new TestModel()]));
+    }
+
+    public function test_flush_removes_all_objects_from_index()
+    {
+        list($engine, $db) = $this->getEngine();
+
+        $db->shouldReceive('table')
+            ->once()
+            ->andReturn($table = Mockery::mock('stdClass'));
+        $table->shouldReceive('update')
+            ->once()
+            ->with(['searchable' => null]);
+
+        $engine->flush(new TestModel());
+    }
+
+    public function test_flush_does_nothing_if_index_maintenance_turned_off_globally()
+    {
+        list($engine, $db) = $this->getEngine(['maintain_index' => false]);
+
+        $db->shouldNotReceive('table');
+
+        $engine->flush(new TestModel());
     }
 
     public function test_search()

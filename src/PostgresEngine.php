@@ -541,4 +541,23 @@ class PostgresEngine extends Engine
     {
         return method_exists($model, 'getDeletedAtColumn');
     }
+
+    /**
+     * Flush all of the model's records from the engine.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model $model
+     * @return void
+     */
+    public function flush($model)
+    {
+        if (! $this->shouldMaintainIndex($model)) {
+            return;
+        }
+
+        $indexColumn = $this->getIndexColumn($model);
+
+        $this->database
+            ->table($model->searchableAs())
+            ->update([$indexColumn => null]);
+    }
 }
