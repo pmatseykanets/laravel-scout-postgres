@@ -32,10 +32,16 @@ This package makes it easy to use native PostgreSQL Full Text Search capabilitie
 
 You can install the package via composer:
 
-**Scout 6**
+**Scout 7**
 
 ``` bash
 composer require pmatseykanets/laravel-scout-postgres
+```
+
+**Scout 6**
+
+``` bash
+composer require pmatseykanets/laravel-scout-postgres:4.0.0
 ```
 
 **Scout 5**

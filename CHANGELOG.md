@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v5.0.0) - 2019-03-13
+
+### Added
+
+- Added support for Scout 7
+
 ## [4.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v4.0.0) - 2018-11-15
 
 ### Added
