@@ -3,6 +3,7 @@
 namespace ScoutEngines\Postgres;
 
 use Laravel\Scout\Builder;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Engines\Engine;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
@@ -200,7 +201,7 @@ class PostgresEngine extends Engine
             return 0;
         }
 
-        return (int) array_first($results)
+        return (int) Arr::first($results)
             ->total_count;
     }
 
@@ -497,7 +498,7 @@ class PostgresEngine extends Engine
 
         $options = $model->searchableOptions() ?: [];
 
-        return array_get($options, $key, $default);
+        return Arr::get($options, $key, $default);
     }
 
     /**
@@ -509,7 +510,7 @@ class PostgresEngine extends Engine
      */
     protected function config($key, $default = null)
     {
-        return array_get($this->config, $key, $default);
+        return Arr::get($this->config, $key, $default);
     }
 
     /**
