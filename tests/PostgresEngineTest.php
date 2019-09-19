@@ -15,14 +15,14 @@ class PostgresEngineTest extends TestCase
 {
     public function test_it_can_be_instantiated()
     {
-        list($engine) = $this->getEngine();
+        [$engine] = $this->getEngine();
 
         $this->assertInstanceOf(PostgresEngine::class, $engine);
     }
 
     public function test_update_adds_object_to_index()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $db->shouldReceive('query')
             ->andReturn($query = Mockery::mock('stdClass'));
@@ -50,14 +50,14 @@ class PostgresEngineTest extends TestCase
 
     public function test_update_do_nothing_if_index_maintenance_turned_off_globally()
     {
-        list($engine) = $this->getEngine(['maintain_index' => false]);
+        [$engine] = $this->getEngine(['maintain_index' => false]);
 
         $engine->update(Collection::make([new TestModel()]));
     }
 
     public function test_delete_removes_object_from_index()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $db->shouldReceive('table')
             ->andReturn($table = Mockery::mock('stdClass'));
@@ -72,7 +72,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_delete_do_nothing_if_index_maintenance_turned_off_globally()
     {
-        list($engine, $db) = $this->getEngine(['maintain_index' => false]);
+        [$engine, $db] = $this->getEngine(['maintain_index' => false]);
 
         $db->shouldNotReceive('table');
 
@@ -81,7 +81,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_flush_removes_all_objects_from_index()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $db->shouldReceive('table')
             ->once()
@@ -95,7 +95,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_flush_does_nothing_if_index_maintenance_turned_off_globally()
     {
-        list($engine, $db) = $this->getEngine(['maintain_index' => false]);
+        [$engine, $db] = $this->getEngine(['maintain_index' => false]);
 
         $db->shouldNotReceive('table');
 
@@ -104,7 +104,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_search()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $skip = 0;
         $limit = 5;
@@ -129,7 +129,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_search_with_order_by()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $table = $this->setDbExpectations($db, false);
 
@@ -149,7 +149,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_search_with_global_config()
     {
-        list($engine, $db) = $this->getEngine(['config' => 'simple']);
+        [$engine, $db] = $this->getEngine(['config' => 'simple']);
 
         $skip = 0;
         $limit = 5;
@@ -170,7 +170,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_search_with_model_config()
     {
-        list($engine, $db) = $this->getEngine(['config' => 'simple']);
+        [$engine, $db] = $this->getEngine(['config' => 'simple']);
 
         $skip = 0;
         $limit = 5;
@@ -194,7 +194,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_search_with_soft_deletes()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $table = $this->setDbExpectations($db);
 
@@ -214,7 +214,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_maps_results_to_models()
     {
-        list($engine) = $this->getEngine();
+        [$engine] = $this->getEngine();
 
         $model = Mockery::mock('StdClass');
         $model->shouldReceive('getKeyName')->andReturn('id');
@@ -232,7 +232,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_map_filters_out_no_longer_existing_models()
     {
-        list($engine) = $this->getEngine();
+        [$engine] = $this->getEngine();
 
         $model = Mockery::mock('StdClass');
         $model->shouldReceive('getKeyName')->andReturn('id');
@@ -255,7 +255,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_it_returns_total_count()
     {
-        list($engine) = $this->getEngine();
+        [$engine] = $this->getEngine();
 
         $count = $engine->getTotalCount(
             json_decode('[{"id": 1, "tsrank": 0.33, "total_count": 100}]')
@@ -266,7 +266,7 @@ class PostgresEngineTest extends TestCase
 
     public function test_map_ids_returns_right_key()
     {
-        list($engine, $db) = $this->getEngine();
+        [$engine, $db] = $this->getEngine();
 
         $table = $this->setDbExpectations($db);
         $table->shouldReceive('getBindings')->andReturn([null, 'foo']);
