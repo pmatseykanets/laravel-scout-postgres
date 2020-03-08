@@ -2,15 +2,15 @@
 
 namespace ScoutEngines\Postgres;
 
-use Laravel\Scout\Builder;
-use Illuminate\Support\Arr;
-use Laravel\Scout\Engines\Engine;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
-use ScoutEngines\Postgres\TsQuery\ToTsQuery;
-use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
-use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
 use Illuminate\Database\ConnectionResolverInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Laravel\Scout\Builder;
+use Laravel\Scout\Engines\Engine;
+use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
+use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
+use ScoutEngines\Postgres\TsQuery\ToTsQuery;
 
 class PostgresEngine extends Engine
 {

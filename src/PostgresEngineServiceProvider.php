@@ -2,12 +2,12 @@
 
 namespace ScoutEngines\Postgres;
 
+use Illuminate\Support\ServiceProvider;
 use Laravel\Scout\Builder;
 use Laravel\Scout\EngineManager;
-use Illuminate\Support\ServiceProvider;
-use ScoutEngines\Postgres\TsQuery\ToTsQuery;
-use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
 use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
+use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
+use ScoutEngines\Postgres\TsQuery\ToTsQuery;
 use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 
 class PostgresEngineServiceProvider extends ServiceProvider

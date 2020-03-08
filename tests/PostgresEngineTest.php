@@ -2,14 +2,14 @@
 
 namespace ScoutEngines\Postgres\Test;
 
-use Mockery;
-use Laravel\Scout\Builder;
 use Illuminate\Database\Connection;
-use Illuminate\Database\Eloquent\Model;
-use ScoutEngines\Postgres\PostgresEngine;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\ConnectionResolverInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Builder;
+use Mockery;
+use ScoutEngines\Postgres\PostgresEngine;
 
 class PostgresEngineTest extends TestCase
 {
