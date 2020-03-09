@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v7.0.0) - 2020-03-08
+
+### Added
+
+- Added support for Laravel 7
+
+### Removed
+
+- Removed support for Laravel 5
+
 ## [6.0.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v6.0.0) - 2019-09-19
 
 ### Added
