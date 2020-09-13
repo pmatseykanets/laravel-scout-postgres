@@ -334,7 +334,7 @@ class PostgresEngine extends Engine
 
         return $results->pluck($model->getKeyName())
             ->intersect($models->keys()) // Filter out no longer existing models (i.e. soft deleted)
-            ->map(function ($key) use ($model, $models) {
+            ->map(function ($key) use ($models) {
                 return $models[$key];
             });
     }
