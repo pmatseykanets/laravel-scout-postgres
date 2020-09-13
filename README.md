@@ -35,43 +35,19 @@ You can install the package via composer:
 **Scout 8**
 
 ``` bash
-composer require pmatseykanets/laravel-scout-postgres:7.0.0
+composer require pmatseykanets/laravel-scout-postgres:7
+```
+
+For Laravel 8 support use `7.1` an up.
+
+``` bash
+composer require pmatseykanets/laravel-scout-postgres:7.1
 ```
 
 **Scout 7**
 
 ``` bash
-composer require pmatseykanets/laravel-scout-postgres:5.0.0
-```
-
-**Scout 6**
-
-``` bash
-composer require pmatseykanets/laravel-scout-postgres:4.0.0
-```
-
-**Scout 5**
-
-``` bash
-composer require pmatseykanets/laravel-scout-postgres:3.1.0
-```
-
-**Scout 4**
-
-``` bash
-composer require pmatseykanets/laravel-scout-postgres:2.3.0
-```
-
-**Scout 2, 3**
-
-``` bash
-composer require pmatseykanets/laravel-scout-postgres:1.0.0
-```
-
-**Scout 1**
-
-``` bash
-composer require pmatseykanets/laravel-scout-postgres:0.2.1
+composer require pmatseykanets/laravel-scout-postgres:5
 ```
 
 ### Laravel
@@ -88,7 +64,7 @@ If you're using Laravel < 5.5 or if you have package auto-discovery turned off y
 
 ### Lumen
 
-Scout service provider uses `config_path` helper that is not included in the Lumen.
+Scout service provider uses `config_path` helper that is not included in Lumen.
 To fix this include the following snippet either directly in `bootstrap.app` or in your autoloaded helpers file i.e. `app/helpers.php`.
 
 ```php
