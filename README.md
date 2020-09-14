@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/pmatseykanets/laravel-scout-postgres/master.svg?style=flat-square)](https://travis-ci.org/pmatseykanets/laravel-scout-postgres)
+![tests](https://github.com/pmatseykanets/laravel-scout-postgres/workflows/tests/badge.svg)
 [![StyleCI](https://styleci.io/repos/67233265/shield)](https://styleci.io/repos/67233265)
 [![Total Downloads](https://img.shields.io/packagist/dt/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
 [![License](https://poser.pugx.org/pmatseykanets/laravel-scout-postgres/license)](https://github.com/pmatseykanets/laravel-scout-postgres/blob/master/LICENSE.md)
