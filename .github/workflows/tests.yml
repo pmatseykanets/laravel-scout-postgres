@@ -22,7 +22,7 @@ jobs:
           - laravel: ^8.0
             scout: ^7.0
 
-    name: Test with PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
+    name: Test PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - Scout ${{ matrix.scout }}
 
     steps:
       - name: Checkout code
