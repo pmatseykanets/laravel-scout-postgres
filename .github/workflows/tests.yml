@@ -15,11 +15,14 @@ jobs:
       matrix:
         php: [7.2, 7.3, 7.4]
         laravel: [^6.0, ^7.0, ^8.0]
+        scout: [^7.0, ^8.0]
         exclude:
           - php: 7.2
             laravel: ^8.0
+          - laravel: ^8.0
+            scout: ^7.0
 
-    name: Test with PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
+    name: Test PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - Scout ${{ matrix.scout }}
 
     steps:
       - name: Checkout code
@@ -38,6 +41,7 @@ jobs:
            composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
            composer require "illuminate/database=${{ matrix.laravel }}" --no-update
            composer require "illuminate/support=${{ matrix.laravel }}" --no-update
+           composer require "laravel/scout=${{ matrix.scout }}" --no-update
            composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
