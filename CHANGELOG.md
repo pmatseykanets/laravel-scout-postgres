@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.2.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v7.2.0) - 2020-09-24
+
+### Changed
+
+- Reinstated support for Scout 7
+
 ## [7.1.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v7.1.0) - 2020-09-14
 
 ### Added
