@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.3.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v7.3.0) - 2021-01-06
+
+### Changed
+
+- Added PHP 8 support
+
 ## [7.2.0](https://github.com/pmatseykanets/laravel-scout-postgres/releases/tag/v7.2.0) - 2020-09-24
 
 ### Changed
