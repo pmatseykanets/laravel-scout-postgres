@@ -9,6 +9,10 @@
 
 This package makes it easy to use native PostgreSQL Full Text Search capabilities with [Laravel Scout](http://laravel.com/docs/master/scout).
 
+If you find this package usefull, please consider bying me a coffee.
+
+<a href='https://ko-fi.com/V7V43MXAO' target='_blank'><img height='28' style='border:0px;height:28px;' src='https://cdn.ko-fi.com/cdn/kofi2.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 ## Contents
 
 - [Installation](#installation)
