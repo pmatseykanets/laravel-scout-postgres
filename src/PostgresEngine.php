@@ -529,7 +529,13 @@ class PostgresEngine extends Engine
      */
     protected function searchConfig(Model $model)
     {
-        return $this->option($model, 'config', $this->config('config', '')) ?: null;
+        $searchConfig = $this->option($model, 'config', $this->config('config', ''));
+
+        if (is_callable($searchConfig)) {
+            $searchConfig = $searchConfig($model);
+        }
+
+        return $searchConfig;
     }
 
     /**
