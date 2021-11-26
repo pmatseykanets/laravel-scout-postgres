@@ -21,7 +21,9 @@ jobs:
           - php: 7.2
             laravel: ^8.0
           - laravel: ^6.0
-            scout: ^9.0            
+            scout: ^9.0
+          - laravel: ^7.0
+            scout: ^9.0
           - laravel: ^8.0
             scout: ^7.0
         include:
