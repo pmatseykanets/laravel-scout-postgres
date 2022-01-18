@@ -17,17 +17,17 @@ jobs:
         laravel: [^6.0, ^7.0, ^8.0, ^9.0]
         scout: [^7.0, ^8.0, ^9.0]
         exclude:
-          - php: ^7.0
+          - php: 7.3
             laravel: ^8.0
             scout: ^8.0
-          - php: ^7.0
+          - php: 7.3
             laravel: ^9.0
             scout: ^9.0
-          - php: ^8.0
-            laravel: ^6.0
           - laravel: ^6.0
+            php: 8.0
             scout: ^8.0
           - laravel: ^6.0
+            php: 8.0
             scout: ^9.0
           - laravel: ^7.0
             scout: ^9.0
