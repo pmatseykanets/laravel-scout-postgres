@@ -89,6 +89,11 @@ class PostgresEngine extends Engine
             $data = $data->merge($model->searchableAdditionalArray() ?: []);
         }
 
+        if (method_exists($model, 'shouldBeSearchable') && !$model->shouldBeSearchable()) {
+            return $query->update(null);
+        }
+
+
         if (! $this->isExternalIndex($model) || $query->exists()) {
             return $query->update($data->all());
         }
