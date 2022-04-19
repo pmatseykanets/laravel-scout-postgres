@@ -561,4 +561,24 @@ class PostgresEngine extends Engine
             ->table($model->searchableAs())
             ->update([$indexColumn => null]);
     }
+    
+    /**
+     * Map the given results to instances of the given model via a lazy collection.
+     *
+     * @param  \Laravel\Scout\Builder  $builder
+     * @param  mixed  $results
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function lazyMap(Builder $builder, $results, $model) {
+        if ($this->getTotalCount($results) === 0) {
+            return LazyCollection::empty();
+        }
+
+        return LazyCollection::make($results->all());
+    }
+
+    public function createIndex($name, array $options = []) {}
+
+    public function deleteIndex($name) {}    
 }
