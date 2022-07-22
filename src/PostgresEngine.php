@@ -2,6 +2,7 @@
 
 namespace ScoutEngines\Postgres;
 
+use Exception;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -337,6 +338,42 @@ class PostgresEngine extends Engine
             ->map(function ($key) use ($models) {
                 return $models[$key];
             });
+    }
+
+    /**
+     * Map the given results to instances of the given model via a lazy collection.
+     *
+     * @param  \Laravel\Scout\Builder  $builder
+     * @param  mixed  $results
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function lazyMap(Builder $builder, $results, $model)
+    {
+        return LazyCollection::make($model->newCollection());
+    }
+
+    /**
+     * Create a search index.
+     *
+     * @param  string  $name
+     * @param  array  $options
+     * @return mixed
+     */
+    public function createIndex($name, array $options = [])
+    {
+        throw new Exception('PostgreSQL indexes should be created through Laravel database migrations.');
+    }
+
+    /**
+     * Delete a search index.
+     *
+     * @param  string  $name
+     * @return mixed
+     */
+    public function deleteIndex($name)
+    {
+        throw new Exception('PostgreSQL indexes should be deleted through Laravel database migrations.');
     }
 
     /**

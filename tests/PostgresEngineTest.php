@@ -282,6 +282,26 @@ class PostgresEngineTest extends TestCase
         $this->assertEquals([1, 2], $ids->all());
     }
 
+    public function test_create_index()
+    {
+        [$engine, $db] = $this->getEngine();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('PostgreSQL indexes should be created through Laravel database migrations.');
+
+        $engine->createIndex('bad_index');
+    }
+
+    public function test_delete_index()
+    {
+        [$engine, $db] = $this->getEngine();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('PostgreSQL indexes should be deleted through Laravel database migrations.');
+
+        $engine->deleteIndex('bad_index');
+    }
+
     protected function getEngine($config = [])
     {
         $resolver = Mockery::mock(ConnectionResolverInterface::class);
