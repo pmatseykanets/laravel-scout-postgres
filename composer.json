@@ -1,56 +1,56 @@
 {
-    "name": "pmatseykanets/laravel-scout-postgres",
-    "description": "PostgreSQL Full Text Search Driver for Laravel Scout",
-    "keywords": [
-        "laravel",
-        "laravel scout",
-        "search",
-        "postgresql",
-        "full text search",
-        "FTS"
-    ],
-    "homepage": "https://github.com/pmatseykanets/laravel-scout-postgres",
-    "license": "MIT",
-    "support": {
-        "issues": "https://github.com/pmatseykanets/laravel-scout-postgres/issues",
-        "source": "https://github.com/pmatseykanets/laravel-scout-postgres"
-    },
-    "authors": [
-        {
-            "name": "Peter Matseykanets",
-            "email": "pmatseykanets@gmail.com",
-            "homepage": "https://github.com/pmatseykanets"
-        }
-    ],
-    "require": {
-        "php": "^7.3|^8.0",
-        "illuminate/contracts": "~6.0|~7.0|~8.0|~9.0",
-        "illuminate/database": "~6.0|~7.0|~8.0|~9.0",
-        "illuminate/support": "~6.0|~7.0|~8.0|~9.0",
-        "laravel/scout": "~7.0|~8.0|~9.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8.3",
-        "mockery/mockery": "^1.2.3"
-    },
-    "autoload": {
-        "psr-4": {
-            "ScoutEngines\\Postgres\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "ScoutEngines\\Postgres\\Test\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "ScoutEngines\\Postgres\\PostgresEngineServiceProvider"
-            ]
-        }
+  "name": "pmatseykanets/laravel-scout-postgres",
+  "description": "PostgreSQL Full Text Search Driver for Laravel Scout",
+  "keywords": [
+    "laravel",
+    "laravel scout",
+    "search",
+    "postgresql",
+    "full text search",
+    "FTS"
+  ],
+  "homepage": "https://github.com/pmatseykanets/laravel-scout-postgres",
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/pmatseykanets/laravel-scout-postgres/issues",
+    "source": "https://github.com/pmatseykanets/laravel-scout-postgres"
+  },
+  "authors": [
+    {
+      "name": "Peter Matseykanets",
+      "email": "pmatseykanets@gmail.com",
+      "homepage": "https://github.com/pmatseykanets"
     }
+  ],
+  "require": {
+    "php": "^8.0|^8.1|^8.2",
+    "illuminate/contracts": "^9.0|^10",
+    "illuminate/database": "^9.0|^10",
+    "illuminate/support": "^9.0|^10",
+    "laravel/scout": "^9.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "mockery/mockery": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "ScoutEngines\\Postgres\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ScoutEngines\\Postgres\\Test\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "ScoutEngines\\Postgres\\PostgresEngineServiceProvider"
+      ]
+    }
+  }
 }
