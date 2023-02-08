@@ -7,6 +7,7 @@ use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
@@ -76,7 +77,7 @@ class PostgresEngine extends Engine
      * Perform update of the given model.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return bool
+     * @return bool|int
      */
     protected function performUpdate(Model $model)
     {
@@ -426,7 +427,7 @@ class PostgresEngine extends Engine
      * Get rank function.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return int
+     * @return string
      */
     protected function rankFunction(Model $model)
     {
