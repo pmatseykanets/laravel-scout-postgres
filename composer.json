@@ -27,7 +27,7 @@
     "illuminate/contracts": "^9.0|^10",
     "illuminate/database": "^9.0|^10",
     "illuminate/support": "^9.0|^10",
-    "laravel/scout": "^9.0"
+    "laravel/scout": "^9.0|^10"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5",
