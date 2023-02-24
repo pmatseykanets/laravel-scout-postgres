@@ -1,23 +1,15 @@
 # PostgreSQL Full Text Search Engine for Laravel Scout
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-![tests](https://github.com/pmatseykanets/laravel-scout-postgres/workflows/tests/badge.svg)
-[![StyleCI](https://styleci.io/repos/67233265/shield)](https://styleci.io/repos/67233265)
-[![Total Downloads](https://img.shields.io/packagist/dt/pmatseykanets/laravel-scout-postgres.svg?style=flat-square)](https://packagist.org/packages/pmatseykanets/laravel-scout-postgres)
-[![License](https://poser.pugx.org/pmatseykanets/laravel-scout-postgres/license)](https://github.com/pmatseykanets/laravel-scout-postgres/blob/master/LICENSE.md)
+![Build Status](https://github.com/devnoiseconsulting/laravel-scout-postgres-tsvector/workflows/tests/badge.svg)
+[![Latest Stable Version](https://img.shields.io/packagist/v/devnoiseconsulting/laravel-scout-postgres-tsvector.svg)](https://packagist.org/packages/devnoiseconsulting/laravel-scout-postgres-tsvector)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 
 This package makes it easy to use native PostgreSQL Full Text Search capabilities with [Laravel Scout](http://laravel.com/docs/master/scout).
-
-If you find this package usefull, please consider bying me a coffee.
-
-<a href='https://ko-fi.com/V7V43MXAO' target='_blank'><img height='28' style='border:0px;height:28px;' src='https://cdn.ko-fi.com/cdn/kofi2.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ## Contents
 
 - [Installation](#installation)
   - [Laravel](#laravel)
-  - [Lumen](#lumen)
 - [Configuration](#configuration)
   - [Configuring the Engine](#configuring-the-engine)
   - [Configuring PostgreSQL](#configuring-postgresql)
@@ -36,8 +28,8 @@ If you find this package usefull, please consider bying me a coffee.
 
 You can install the package via composer:
 
-``` bash
-composer require pmatseykanets/laravel-scout-postgres
+```bash
+composer require devnoiseconsulting/laravel-scout-postgres-tsvector
 ```
 
 ### Laravel
@@ -50,52 +42,6 @@ If you're using Laravel < 5.5 or if you have package auto-discovery turned off y
     ...
     ScoutEngines\Postgres\PostgresEngineServiceProvider::class,
 ],
-```
-
-### Lumen
-
-Scout service provider uses `config_path` helper that is not included in Lumen.
-To fix this include the following snippet either directly in `bootstrap.app` or in your autoloaded helpers file i.e. `app/helpers.php`.
-
-```php
-if (! function_exists('config_path')) {
-    /**
-     * Get the configuration path.
-     *
-     * @param  string  $path
-     * @return string
-     */
-    function config_path($path = '')
-    {
-        return app()->basePath() . '/config'.($path ? DIRECTORY_SEPARATOR.$path : $path);
-    }
-}
-```
-
-Create the `scout.php` config file in `app/config` folder with the following contents
-
-```php
-<?php
-
-return [
-    'driver' => env('SCOUT_DRIVER', 'pgsql'),
-    'prefix' => env('SCOUT_PREFIX', ''),
-    'queue' => false,
-    'pgsql' => [
-        'connection' => 'pgsql',
-        'maintain_index' => true,
-        'config' => 'english',
-    ],
-];
-```
-
-Register service providers:
-
-```php
-// bootstrap/app.php
-$app->register(Laravel\Scout\ScoutServiceProvider::class);
-$app->configure('scout');
-$app->register(ScoutEngines\Postgres\PostgresEngineServiceProvider::class);
 ```
 
 ## Configuration
@@ -126,7 +72,7 @@ Specify the database connection that should be used to access indexed documents 
 
 ### Configuring PostgreSQL
 
-Make sure that an appropriate [default text search configuration](https://www.postgresql.org/docs/9.5/static/runtime-config-client.html#GUC-DEFAULT-TEXT-SEARCH-CONFIG) is set globbaly (in `postgresql.conf`), for a particular database (`ALTER DATABASE ... SET default_text_search_config TO ...`) or alternatively set `default_text_search_config` in each session.
+Make sure that an appropriate [default text search configuration](https://www.postgresql.org/docs/14/runtime-config-client.html#GUC-DEFAULT-TEXT-SEARCH-CONFIG) is set globbaly (in `postgresql.conf`), for a particular database (`ALTER DATABASE ... SET default_text_search_config TO ...`) or alternatively set `default_text_search_config` in each session.
 
 To check the current value
 
@@ -265,7 +211,7 @@ $posts = App\Post::search('fat & (cat | rat)')
     ->usingTsQuery()->get()
 
 // websearch_to_tsquery()
-// uses web search syntax 
+// uses web search syntax
 $posts = App\Post::search('"sad cat" or "fat rat" -mouse')
     ->usingWebSearchQuery()->get()
 
@@ -281,13 +227,13 @@ Please see the [official documentation](http://laravel.com/docs/master/scout) on
 
 ## Testing
 
-``` bash
+```bash
 composer test
 ```
 
 ## Security
 
-If you discover any security related issues, please email pmatseykanets@gmail.com instead of using the issue tracker.
+If you discover any security related issues, please email flynnmj@devnoise.com instead of using the issue tracker.
 
 ## Changelog
 
@@ -299,6 +245,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Credits
 
+- [Michael Flynn](https://github.com/devNoiseConsulting)
 - [Peter Matseykanets](https://github.com/pmatseykanets)
 - [All Contributors](../../contributors)
 
