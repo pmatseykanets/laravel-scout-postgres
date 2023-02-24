@@ -26,5 +26,36 @@
       "email": "pmatseykanets@gmail.com",
       "homepage": "https://github.com/pmatseykanets"
     }
-  ]
+  ],
+  "require": {
+    "php": "^8.0|^8.1|^8.2",
+    "illuminate/contracts": "^9.0|^10",
+    "illuminate/database": "^9.0|^10",
+    "illuminate/support": "^9.0|^10",
+    "laravel/scout": "^9.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "mockery/mockery": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "ScoutEngines\\Postgres\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ScoutEngines\\Postgres\\Test\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "ScoutEngines\\Postgres\\PostgresEngineServiceProvider"
+      ]
+    }
+  }
 }
