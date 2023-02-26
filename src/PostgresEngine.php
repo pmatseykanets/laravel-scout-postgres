@@ -33,7 +33,7 @@ class PostgresEngine extends Engine
     /**
      * Config values.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected $config = [];
 
@@ -46,7 +46,7 @@ class PostgresEngine extends Engine
      * Create a new instance of PostgresEngine.
      *
      * @param \Illuminate\Database\ConnectionResolverInterface $resolver
-     * @param $config
+     * @param array<mixed> $config
      */
     public function __construct(ConnectionResolverInterface $resolver, $config)
     {
@@ -213,7 +213,7 @@ class PostgresEngine extends Engine
      * @param \Laravel\Scout\Builder $builder
      * @param int|null $perPage
      * @param int $page
-     * @return array
+     * @return array<mixed>
      */
     protected function performSearch(Builder $builder, $perPage = 0, $page = 1)
     {
@@ -305,7 +305,7 @@ class PostgresEngine extends Engine
      */
     public function mapIds($results)
     {
-        $keyName = $this->model ? $this->model->getKeyName() : 'id';
+        $keyName = $this->model !== null ? $this->model->getKeyName() : 'id';
 
         return collect($results)
             ->pluck($keyName)
@@ -358,10 +358,10 @@ class PostgresEngine extends Engine
      * Create a search index.
      *
      * @param  string  $name
-     * @param  array  $options
+     * @param  array<mixed>  $options
      * @return mixed
      */
-    public function createIndex($name, array $options = [])
+    public function createIndex($name, $options = [])
     {
         throw new Exception('PostgreSQL indexes should be created through Laravel database migrations.');
     }
@@ -379,6 +379,7 @@ class PostgresEngine extends Engine
 
     /**
      * Connect to the database.
+     * @return void
      */
     protected function connect()
     {
@@ -415,7 +416,7 @@ class PostgresEngine extends Engine
         }
 
         if ($norm = $this->rankNormalization($model)) {
-            $args->push($norm);
+            $args->push((string) $norm);
         }
 
         $fn = $this->rankFunction($model);
@@ -494,8 +495,10 @@ class PostgresEngine extends Engine
         }
 
         if ($model !== null) {
-            return $this->option($model, 'maintain_index', true);
+            return (bool) $this->option($model, 'maintain_index', true);
         }
+
+        return false;
     }
 
     /**
@@ -553,6 +556,7 @@ class PostgresEngine extends Engine
 
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
+     * @return void
      */
     protected function preserveModel(Model $model)
     {
@@ -563,7 +567,7 @@ class PostgresEngine extends Engine
      * Returns a search config name for a model.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return string
+     * @return string|null
      */
     protected function searchConfig(Model $model)
     {

@@ -50,7 +50,7 @@ abstract class BaseTsQueryable implements TsQueryable
     /**
      * Return value bindings for the SQL representation.
      *
-     * @return array
+     * @return array<mixed>
      */
     public function bindings()
     {

@@ -1,0 +1,26 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\ConnectionInterface\\:\\:getDriverName\\(\\)\\.$#"
+			count: 1
+			path: src/PostgresEngine.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:getDeletedAtColumn\\(\\)\\.$#"
+			count: 1
+			path: src/PostgresEngine.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:searchableAs\\(\\)\\.$#"
+			count: 3
+			path: src/PostgresEngine.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:toSearchableArray\\(\\)\\.$#"
+			count: 1
+			path: src/PostgresEngine.php
+
+		-
+			message: "#^Access to an undefined property ScoutEngines\\\\Postgres\\\\PostgresEngineServiceProvider\\:\\:\\$callback\\.$#"
+			count: 1
+			path: src/PostgresEngineServiceProvider.php

@@ -12,6 +12,9 @@ use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 
 class PostgresEngineServiceProvider extends ServiceProvider
 {
+    /**
+     * @return array<string, string>
+     */
     public static function builderMacros()
     {
         return [
@@ -22,6 +25,11 @@ class PostgresEngineServiceProvider extends ServiceProvider
         ];
     }
 
+     /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->app->make(EngineManager::class)->extend('pgsql', function () {
@@ -36,6 +44,11 @@ class PostgresEngineServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * @param string $name
+     * @param string $class
+     * @return void
+     */
     protected function registerBuilderMacro($name, $class)
     {
         if (! Builder::hasMacro($name)) {
