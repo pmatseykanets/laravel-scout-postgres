@@ -15,7 +15,7 @@ jobs:
       matrix:
         php: [8.0, 8.1, 8.2]
         laravel: [^9, ^10]
-        scout: [^9]
+        scout: [^9, ^10]
         exclude:
           - php: 8.0
             laravel: ^10
