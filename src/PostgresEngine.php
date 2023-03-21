@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\PostgresConnection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\LazyCollection;
 use InvalidArgumentException;
@@ -20,7 +21,7 @@ class PostgresEngine extends Engine
     /**
      * Database connection.
      *
-     * @var \Illuminate\Database\Connection
+     * @var \Illuminate\Database\PostgresConnection
      */
     protected $database;
 
@@ -385,11 +386,11 @@ class PostgresEngine extends Engine
         $connection = $this->resolver
             ->connection($this->config('connection'));
 
-        if ($connection->getDriverName() !== 'pgsql') {
+        if ($connection instanceof PostgresConnection) {
+            $this->database = $connection;
+        } else {
             throw new InvalidArgumentException('Connection should use pgsql driver.');
         }
-
-        $this->database = $connection;
     }
 
     /**
