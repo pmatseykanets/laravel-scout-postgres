@@ -25,7 +25,7 @@ class PostgresEngineServiceProvider extends ServiceProvider
         ];
     }
 
-     /**
+    /**
      * Bootstrap the application events.
      *
      * @return void
@@ -45,8 +45,8 @@ class PostgresEngineServiceProvider extends ServiceProvider
     }
 
     /**
-     * @param string $name
-     * @param string $class
+     * @param  string  $name
+     * @param  string  $class
      * @return void
      */
     protected function registerBuilderMacro($name, $class)

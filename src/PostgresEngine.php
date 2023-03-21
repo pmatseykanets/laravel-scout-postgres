@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\LazyCollection;
+use InvalidArgumentException;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
 use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
@@ -45,8 +46,7 @@ class PostgresEngine extends Engine
     /**
      * Create a new instance of PostgresEngine.
      *
-     * @param \Illuminate\Database\ConnectionResolverInterface $resolver
-     * @param array<mixed> $config
+     * @param  array<mixed>  $config
      */
     public function __construct(ConnectionResolverInterface $resolver, $config)
     {
@@ -59,7 +59,7 @@ class PostgresEngine extends Engine
     /**
      * Update the given models in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection $models
+     * @param  \Illuminate\Database\Eloquent\Collection  $models
      * @return void
      */
     public function update($models)
@@ -76,7 +76,6 @@ class PostgresEngine extends Engine
     /**
      * Perform update of the given model.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool|int
      */
     protected function performUpdate(Model $model)
@@ -105,7 +104,6 @@ class PostgresEngine extends Engine
     /**
      * Get the indexed value for a given model.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return string
      */
     protected function toVector(Model $model)
@@ -129,7 +127,7 @@ class PostgresEngine extends Engine
 
             // Set a field weight if it was specified in Model's searchableOptions()
             if ($label = $this->rankFieldWeightLabel($model, $key)) {
-                $vector = "setweight($vector, ?)";
+                $vector = "setweight({$vector}, ?)";
                 $bindings->push($label);
             }
 
@@ -138,14 +136,14 @@ class PostgresEngine extends Engine
 
         return $this->database
             ->query()
-            ->selectRaw("$select AS tsvector", $bindings->all())
+            ->selectRaw("{$select} AS tsvector", $bindings->all())
             ->value('tsvector');
     }
 
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection $models
+     * @param  \Illuminate\Database\Eloquent\Collection  $models
      * @return void
      */
     public function delete($models)
@@ -170,7 +168,6 @@ class PostgresEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder $builder
      * @return mixed
      */
     public function search(Builder $builder)
@@ -181,9 +178,8 @@ class PostgresEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param  \Laravel\Scout\Builder $builder
-     * @param  int $perPage
-     * @param  int $page
+     * @param  int  $perPage
+     * @param  int  $page
      * @return mixed
      */
     public function paginate(Builder $builder, $perPage, $page)
@@ -194,7 +190,7 @@ class PostgresEngine extends Engine
     /**
      * Get the total count from a raw result returned by the engine.
      *
-     * @param  mixed $results
+     * @param  mixed  $results
      * @return int
      */
     public function getTotalCount($results)
@@ -210,9 +206,8 @@ class PostgresEngine extends Engine
     /**
      * Perform the given search on the engine.
      *
-     * @param \Laravel\Scout\Builder $builder
-     * @param int|null $perPage
-     * @param int $page
+     * @param  int|null  $perPage
+     * @param  int  $page
      * @return array<mixed>
      */
     protected function performSearch(Builder $builder, $perPage = 0, $page = 1)
@@ -230,7 +225,7 @@ class PostgresEngine extends Engine
             ->select($builder->model->getKeyName())
             ->selectRaw("{$this->rankingExpression($builder->model, $indexColumn)} AS rank")
             ->selectRaw('COUNT(*) OVER () AS total_count')
-            ->whereRaw("$indexColumn @@ \"tsquery\"");
+            ->whereRaw("{$indexColumn} @@ \"tsquery\"");
 
         // Apply where clauses that were set on the builder instance if any
         foreach ($builder->wheres as $key => $value) {
@@ -269,7 +264,7 @@ class PostgresEngine extends Engine
             ? call_user_func($builder->callback, $builder, $this->searchConfig($builder->model), $query)
             : $this->defaultQueryMethod($builder->query, $this->searchConfig($builder->model));
 
-        $query->crossJoin($this->database->raw($tsQuery->sql().' AS "tsquery"'));
+        $query->crossJoin($this->database->raw($tsQuery->sql() . ' AS "tsquery"'));
         // Add TS bindings to the query
         $query->addBinding($tsQuery->bindings(), 'join');
 
@@ -280,8 +275,8 @@ class PostgresEngine extends Engine
     /**
      * Returns the default query method.
      *
-     * @param string $query
-     * @param string $config
+     * @param  string  $query
+     * @param  string  $config
      * @return \ScoutEngines\Postgres\TsQuery\TsQueryable
      */
     public function defaultQueryMethod($query, $config)
@@ -300,7 +295,7 @@ class PostgresEngine extends Engine
     /**
      * Pluck and return the primary keys of the given results.
      *
-     * @param mixed $results
+     * @param  mixed  $results
      * @return \Illuminate\Support\Collection
      */
     public function mapIds($results)
@@ -315,7 +310,6 @@ class PostgresEngine extends Engine
     /**
      * Map the given results to instances of the given model.
      *
-     * @param  \Laravel\Scout\Builder  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Database\Eloquent\Collection
@@ -344,7 +338,6 @@ class PostgresEngine extends Engine
     /**
      * Map the given results to instances of the given model via a lazy collection.
      *
-     * @param  \Laravel\Scout\Builder  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Support\LazyCollection
@@ -379,6 +372,7 @@ class PostgresEngine extends Engine
 
     /**
      * Connect to the database.
+     *
      * @return void
      */
     protected function connect()
@@ -392,7 +386,7 @@ class PostgresEngine extends Engine
             ->connection($this->config('connection'));
 
         if ($connection->getDriverName() !== 'pgsql') {
-            throw new \InvalidArgumentException('Connection should use pgsql driver.');
+            throw new InvalidArgumentException('Connection should use pgsql driver.');
         }
 
         $this->database = $connection;
@@ -403,8 +397,7 @@ class PostgresEngine extends Engine
      *   ts_rank([ weights, ] vector, query [, normalization ])
      *   ts_rank_cd([ weights, ] vector, query [, normalization ]).
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param string $indexColumn
+     * @param  string  $indexColumn
      * @return string
      */
     protected function rankingExpression(Model $model, $indexColumn)
@@ -412,7 +405,7 @@ class PostgresEngine extends Engine
         $args = collect([$indexColumn, '"tsquery"']);
 
         if ($weights = $this->rankWeights($model)) {
-            $args->prepend("'$weights'");
+            $args->prepend("'{$weights}'");
         }
 
         if ($norm = $this->rankNormalization($model)) {
@@ -421,13 +414,12 @@ class PostgresEngine extends Engine
 
         $fn = $this->rankFunction($model);
 
-        return "$fn({$args->implode(',')})";
+        return "{$fn}({$args->implode(',')})";
     }
 
     /**
      * Get rank function.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return string
      */
     protected function rankFunction(Model $model)
@@ -442,13 +434,12 @@ class PostgresEngine extends Engine
     /**
      * Get the rank weight label for a given field.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param string $field
+     * @param  string  $field
      * @return string
      */
     protected function rankFieldWeightLabel(Model $model, $field)
     {
-        $label = $this->option($model, "rank.fields.$field");
+        $label = $this->option($model, "rank.fields.{$field}");
 
         return collect(['A', 'B', 'C', 'D'])
             ->contains($label) ? $label : '';
@@ -457,7 +448,6 @@ class PostgresEngine extends Engine
     /**
      * Get rank weights.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return string
      */
     protected function rankWeights(Model $model)
@@ -468,13 +458,12 @@ class PostgresEngine extends Engine
             return '';
         }
 
-        return '{'.implode(',', $weights).'}';
+        return '{' . implode(',', $weights) . '}';
     }
 
     /**
      * Get rank normalization.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return int
      */
     protected function rankNormalization(Model $model)
@@ -485,7 +474,6 @@ class PostgresEngine extends Engine
     /**
      * See if the index should be maintained for a given model.
      *
-     * @param \Illuminate\Database\Eloquent\Model|null $model
      * @return bool
      */
     protected function shouldMaintainIndex(Model $model = null)
@@ -504,7 +492,6 @@ class PostgresEngine extends Engine
     /**
      * Get the name of the column that holds indexed documents.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return string
      */
     protected function getIndexColumn(Model $model)
@@ -515,7 +502,6 @@ class PostgresEngine extends Engine
     /**
      * See if indexed documents are stored in a external table.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return mixed
      */
     protected function isExternalIndex(Model $model)
@@ -526,9 +512,8 @@ class PostgresEngine extends Engine
     /**
      * Get the model specific option value or a default.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @param string $key
-     * @param mixed $default
+     * @param  string  $key
+     * @param  mixed  $default
      * @return mixed
      */
     protected function option(Model $model, $key, $default = null)
@@ -545,8 +530,8 @@ class PostgresEngine extends Engine
     /**
      * Get the config value or a default.
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  string  $key
+     * @param  mixed  $default
      * @return mixed
      */
     protected function config($key, $default = null)
@@ -555,7 +540,6 @@ class PostgresEngine extends Engine
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return void
      */
     protected function preserveModel(Model $model)
@@ -566,7 +550,6 @@ class PostgresEngine extends Engine
     /**
      * Returns a search config name for a model.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return string|null
      */
     protected function searchConfig(Model $model)
@@ -577,7 +560,6 @@ class PostgresEngine extends Engine
     /**
      * Checks if the model uses the SoftDeletes trait.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
      * @return bool
      */
     protected function usesSoftDeletes(Model $model)
@@ -588,7 +570,7 @@ class PostgresEngine extends Engine
     /**
      * Flush all of the model's records from the engine.
      *
-     * @param  \Illuminate\Database\Eloquent\Model $model
+     * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return void
      */
     public function flush($model)

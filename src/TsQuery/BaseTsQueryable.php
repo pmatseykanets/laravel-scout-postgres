@@ -28,8 +28,8 @@ abstract class BaseTsQueryable implements TsQueryable
     /**
      * Create a new instance.
      *
-     * @param string $query
-     * @param string $config
+     * @param  string  $query
+     * @param  string  $config
      */
     public function __construct($query, $config = null)
     {
