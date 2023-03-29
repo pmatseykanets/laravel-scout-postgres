@@ -317,23 +317,25 @@ class PostgresEngine extends Engine
      */
     public function map(Builder $builder, $results, $model)
     {
+        $resultModels = Collection::make();
+
         if (empty($results)) {
-            return Collection::make();
+            return $resultModels;
         }
 
         $keys = $this->mapIds($results);
-
-        $results = collect($results);
 
         $models = $model->whereIn($model->getKeyName(), $keys->all())
             ->get()
             ->keyBy($model->getKeyName());
 
-        return $results->pluck($model->getKeyName())
-            ->intersect($models->keys()) // Filter out no longer existing models (i.e. soft deleted)
-            ->map(function ($key) use ($models) {
-                return $models[$key];
-            });
+        // The models didn't come out of the database in the correct order.
+        // This will map the models into the resultsModel based on the results order.
+        foreach ($keys as $key) {
+            $resultModels->push($models[$key]);
+        }
+
+        return $resultModels;
     }
 
     /**
