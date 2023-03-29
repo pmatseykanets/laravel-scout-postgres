@@ -15,7 +15,7 @@ class PostgresEngineServiceProvider extends ServiceProvider
     /**
      * @return array<string, string>
      */
-    public static function builderMacros()
+    public static function builderMacros(): array
     {
         return [
             'usingPhraseQuery' => PhraseToTsQuery::class,
@@ -27,10 +27,8 @@ class PostgresEngineServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap the application events.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->app->make(EngineManager::class)->extend('pgsql', function () {
             return new PostgresEngine(
@@ -44,21 +42,14 @@ class PostgresEngineServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * @param  string  $name
-     * @param  string  $class
-     * @return void
-     */
-    protected function registerBuilderMacro($name, $class)
+    protected function registerBuilderMacro(string $name, string $class): void
     {
         if (! Builder::hasMacro($name)) {
-            Builder::macro($name, function () use ($class) {
-                $this->callback = function ($builder, $config) use ($class) {
+            $builderMacro = (object) [
+                'callback' => function (Builder $builder, mixed $config) use ($class) {
                     return new $class($builder->query, $config);
-                };
-
-                return $this;
-            });
+                }];
+            Builder::macro($name, $builderMacro);
         }
     }
 }
