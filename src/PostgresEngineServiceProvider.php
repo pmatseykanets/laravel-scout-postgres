@@ -45,11 +45,13 @@ class PostgresEngineServiceProvider extends ServiceProvider
     protected function registerBuilderMacro(string $name, string $class): void
     {
         if (! Builder::hasMacro($name)) {
-            $builderMacro = (object) [
-                'callback' => function (Builder $builder, mixed $config) use ($class) {
+            Builder::macro($name, function () use ($class) {
+                $this->callback = function ($builder, $config) use ($class) {
                     return new $class($builder->query, $config);
-                }];
-            Builder::macro($name, $builderMacro);
+                };
+
+                return $this;
+            });
         }
     }
 }
