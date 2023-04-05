@@ -109,7 +109,9 @@ class PostgresEngine extends Engine
      */
     protected function toVector(Model $model)
     {
-        $fields = collect($model->toSearchableArray())
+        /** @var array<string, mixed> $searchableArray */
+        $searchableArray = $model->toSearchableArray();
+        $fields = collect($searchableArray)
             ->map(function ($value) {
                 return $value === null ? '' : $value;
             });
@@ -282,7 +284,7 @@ class PostgresEngine extends Engine
      */
     public function defaultQueryMethod($query, $config)
     {
-        switch (strtolower($this->config('search_using', 'plain'))) {
+        switch (strtolower($this->config('search_using', 'plainquery'))) {
             case 'tsquery':
                 return new ToTsQuery($query, $config);
             case 'phrasequery':
@@ -303,6 +305,7 @@ class PostgresEngine extends Engine
     {
         $keyName = $this->model !== null ? $this->model->getKeyName() : 'id';
 
+        /** @var array<int, object> $results */
         return collect($results)
             ->pluck($keyName)
             ->values();
@@ -553,11 +556,11 @@ class PostgresEngine extends Engine
     /**
      * Returns a search config name for a model.
      *
-     * @return string|null
+     * @return string
      */
     protected function searchConfig(Model $model)
     {
-        return $this->option($model, 'config', $this->config('config', '')) ?: null;
+        return $this->option($model, 'config', $this->config('config', '')) ?: 'simple';
     }
 
     /**
