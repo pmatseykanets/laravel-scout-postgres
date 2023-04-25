@@ -1,65 +1,61 @@
 {
-  "name": "devnoiseconsulting/laravel-scout-postgres-tsvector",
-  "description": "PostgreSQL Full Text Search Driver for Laravel Scout",
-  "keywords": [
-    "laravel",
-    "laravel scout",
-    "search",
-    "postgresql",
-    "full text search",
-    "FTS"
-  ],
-  "homepage": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector",
-  "license": "MIT",
-  "support": {
-    "issues": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector/issues",
-    "source": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector"
-  },
-  "authors": [
-    {
-      "name": "Michael Flynn",
-      "email": "flynnmj@devnoise.com.com",
-      "homepage": "https://github.com/devNoiseConsulting"
+    "name": "devnoiseconsulting/laravel-scout-postgres-tsvector",
+    "description": "PostgreSQL Full Text Search Driver for Laravel Scout",
+    "keywords": [
+        "laravel",
+        "laravel scout",
+        "search",
+        "postgresql",
+        "full text search",
+        "FTS"
+    ],
+    "homepage": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector/issues",
+        "source": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector"
     },
-    {
-      "name": "Peter Matseykanets",
-      "email": "pmatseykanets@gmail.com",
-      "homepage": "https://github.com/pmatseykanets"
+    "authors": [
+        {
+            "name": "Michael Flynn",
+            "email": "flynnmj@devnoise.com.com",
+            "homepage": "https://github.com/devNoiseConsulting"
+        },
+        {
+            "name": "Peter Matseykanets",
+            "email": "pmatseykanets@gmail.com",
+            "homepage": "https://github.com/pmatseykanets"
+        }
+    ],
+    "require": {
+        "php": "^8.0|^8.1|^8.2",
+        "illuminate/contracts": "^9|^10",
+        "illuminate/database": "^9|^10",
+        "illuminate/support": "^9|^10",
+        "laravel/scout": "^9|^10"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6",
+        "mockery/mockery": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "ScoutEngines\\Postgres\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ScoutEngines\\Postgres\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ScoutEngines\\Postgres\\PostgresEngineServiceProvider"
+            ]
+        }
     }
-  ],
-  "require": {
-    "php": "^8.0|^8.1|^8.2",
-    "illuminate/contracts": "^9.0|^10",
-    "illuminate/database": "^9.0|^10",
-    "illuminate/support": "^9.0|^10",
-    "laravel/scout": "^9.0|^10"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "mockery/mockery": "^1.5",
-    "nunomaduro/larastan": "^2.0",
-    "orchestra/testbench": "^8.0",
-    "tightenco/duster": "^1.1",
-    "laravel/pint": "^1.6"
-  },
-  "autoload": {
-    "psr-4": {
-      "ScoutEngines\\Postgres\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "ScoutEngines\\Postgres\\Test\\": "tests"
-    }
-  },
-  "scripts": {
-    "test": "vendor/bin/phpunit"
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "ScoutEngines\\Postgres\\PostgresEngineServiceProvider"
-      ]
-    }
-  }
 }
