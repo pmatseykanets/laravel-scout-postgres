@@ -3,11 +3,11 @@
 namespace ScoutEngines\Postgres\Test;
 
 use Exception;
-use Illuminate\Database\Connection;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\PostgresConnection;
 use Laravel\Scout\Builder;
 use Mockery;
 use ScoutEngines\Postgres\PostgresEngine;
@@ -36,7 +36,7 @@ class PostgresEngineTest extends TestCase
         $query->shouldReceive('selectRaw')
             ->with(
                 'to_tsvector(COALESCE(?, get_current_ts_config()), ?) || setweight(to_tsvector(COALESCE(?, get_current_ts_config()), ?), ?) AS tsvector',
-                [null, 'Foo', null, '', 'B']
+                ['simple', 'Foo', 'simple', '', 'B']
             )
             ->andReturnSelf();
         $query->shouldReceive('value')
@@ -361,7 +361,7 @@ class PostgresEngineTest extends TestCase
     {
         $resolver = Mockery::mock(ConnectionResolverInterface::class);
         $resolver->shouldReceive('connection')
-            ->andReturn($db = Mockery::mock(Connection::class));
+            ->andReturn($db = Mockery::mock(PostgresConnection::class));
 
         $db->shouldReceive('getDriverName')->andReturn('pgsql');
 
@@ -377,30 +377,30 @@ class PostgresEngineTest extends TestCase
             ->andReturn('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"');
 
         $table->shouldReceive('crossJoin')
-                ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"')
-                ->andReturnSelf()
+            ->with('plainto_tsquery(COALESCE(?, get_current_ts_config()), ?) AS "tsquery"')
+            ->andReturnSelf()
             ->shouldReceive('addBinding')
-                ->with(Mockery::type('array'), 'join')
-                ->andReturnSelf()
+            ->with(Mockery::type('array'), 'join')
+            ->andReturnSelf()
             ->shouldReceive('select')
-                ->with('id')
-                ->andReturnSelf()
+            ->with('id')
+            ->andReturnSelf()
             ->shouldReceive('selectRaw')
-                ->with('ts_rank(searchable,"tsquery") AS rank')
-                ->andReturnSelf()
+            ->with('ts_rank(searchable,"tsquery") AS rank')
+            ->andReturnSelf()
             ->shouldReceive('selectRaw')
-                ->with('COUNT(*) OVER () AS total_count')
-                ->andReturnSelf()
+            ->with('COUNT(*) OVER () AS total_count')
+            ->andReturnSelf()
             ->shouldReceive('whereRaw')
-                ->andReturnSelf();
+            ->andReturnSelf();
 
         if ($withDefaultOrderBy) {
             $table->shouldReceive('orderBy')
-                    ->with('rank', 'desc')
-                    ->andReturnSelf()
+                ->with('rank', 'desc')
+                ->andReturnSelf()
                 ->shouldReceive('orderBy')
-                    ->with('id')
-                    ->andReturnSelf();
+                ->with('id')
+                ->andReturnSelf();
         }
 
         $table->shouldReceive('toSql');

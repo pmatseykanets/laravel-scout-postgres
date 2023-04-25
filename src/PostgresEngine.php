@@ -335,7 +335,9 @@ class PostgresEngine extends Engine
         // The models didn't come out of the database in the correct order.
         // This will map the models into the resultsModel based on the results order.
         foreach ($keys as $key) {
-            $resultModels->push($models[$key]);
+            if ($models->has($key)) {
+                $resultModels->push($models[$key]);
+            }
         }
 
         return $resultModels;
