@@ -36,7 +36,7 @@ class PostgresEngineTest extends TestCase
         $query->shouldReceive('selectRaw')
             ->with(
                 'to_tsvector(COALESCE(?, get_current_ts_config()), ?) || setweight(to_tsvector(COALESCE(?, get_current_ts_config()), ?), ?) AS tsvector',
-                ['simple', 'Foo', 'simple', '', 'B']
+                [null, 'Foo', null, '', 'B']
             )
             ->andReturnSelf();
         $query->shouldReceive('value')

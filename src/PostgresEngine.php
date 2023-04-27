@@ -95,19 +95,17 @@ class PostgresEngine extends Engine
             return $query->update($data->all());
         }
 
+        $modelKeyInfo = collect([$model->getKeyName() => $model->getKey()]);
+
         return $query->insert(
-            $data->merge([
-                $model->getKeyName() => $model->getKey(),
-            ])->all()
+            $data->merge($modelKeyInfo)->all()
         );
     }
 
     /**
      * Get the indexed value for a given model.
-     *
-     * @return string
      */
-    protected function toVector(Model $model)
+    protected function toVector(Model $model): mixed
     {
         /** @var array<string, mixed> $searchableArray */
         $searchableArray = $model->toSearchableArray();
@@ -153,19 +151,22 @@ class PostgresEngine extends Engine
     {
         $model = $models->first();
 
-        if (! $this->shouldMaintainIndex($model)) {
-            return;
+        if ($model) {
+            if (! $this->shouldMaintainIndex($model)) {
+                return;
+            }
+
+            $indexColumn = $this->getIndexColumn($model);
+            $key = $model->getKeyName();
+
+            $ids = $models->pluck($key)->all();
+
+            $this->database
+                ->table($model->searchableAs())
+                ->whereIn($key, $ids)
+                ->update([$indexColumn => null]);
+
         }
-
-        $indexColumn = $this->getIndexColumn($model);
-        $key = $model->getKeyName();
-
-        $ids = $models->pluck($key)->all();
-
-        $this->database
-            ->table($model->searchableAs())
-            ->whereIn($key, $ids)
-            ->update([$indexColumn => null]);
     }
 
     /**
@@ -202,8 +203,11 @@ class PostgresEngine extends Engine
             return 0;
         }
 
-        return (int) Arr::first($results)
-            ->total_count;
+        /** @var array<int, object> $results */
+        /** @var object{'id': int, 'rank': string, 'total_count': int} $result */
+        $result = Arr::first($results);
+
+        return (int) $result->total_count;
     }
 
     /**
@@ -267,6 +271,7 @@ class PostgresEngine extends Engine
             ? call_user_func($builder->callback, $builder, $this->searchConfig($builder->model), $query)
             : $this->defaultQueryMethod($builder->query, $this->searchConfig($builder->model));
 
+        /** @var \ScoutEngines\Postgres\TsQuery\BaseTsQueryable $tsQuery */
         $query->crossJoin($this->database->raw($tsQuery->sql() . ' AS "tsquery"'));
         // Add TS bindings to the query
         $query->addBinding($tsQuery->bindings(), 'join');
@@ -284,7 +289,7 @@ class PostgresEngine extends Engine
      */
     public function defaultQueryMethod($query, $config)
     {
-        switch (strtolower($this->config('search_using', 'plainquery'))) {
+        switch (strtolower($this->stringConfig('search_using', 'plainquery'))) {
             case 'tsquery':
                 return new ToTsQuery($query, $config);
             case 'phrasequery':
@@ -334,6 +339,7 @@ class PostgresEngine extends Engine
 
         // The models didn't come out of the database in the correct order.
         // This will map the models into the resultsModel based on the results order.
+        /** @var int $key */
         foreach ($keys as $key) {
             if ($models->has($key)) {
                 $resultModels->push($models[$key]);
@@ -391,7 +397,7 @@ class PostgresEngine extends Engine
         }
 
         $connection = $this->resolver
-            ->connection($this->config('connection'));
+            ->connection($this->stringConfig('connection'));
 
         if ($connection instanceof PostgresConnection) {
             $this->database = $connection;
@@ -404,11 +410,8 @@ class PostgresEngine extends Engine
      * Build ranking expression that will be used in a search.
      *   ts_rank([ weights, ] vector, query [, normalization ])
      *   ts_rank_cd([ weights, ] vector, query [, normalization ]).
-     *
-     * @param  string  $indexColumn
-     * @return string
      */
-    protected function rankingExpression(Model $model, $indexColumn)
+    protected function rankingExpression(Model $model, string $indexColumn): string
     {
         $args = collect([$indexColumn, '"tsquery"']);
 
@@ -427,27 +430,22 @@ class PostgresEngine extends Engine
 
     /**
      * Get rank function.
-     *
-     * @return string
      */
-    protected function rankFunction(Model $model)
+    protected function rankFunction(Model $model): string
     {
         $default = 'ts_rank';
 
-        $function = $this->option($model, 'rank.function', $default);
+        $function = $this->stringOption($model, 'rank.function', $default);
 
         return collect(['ts_rank', 'ts_rank_cd'])->contains($function) ? $function : $default;
     }
 
     /**
      * Get the rank weight label for a given field.
-     *
-     * @param  string  $field
-     * @return string
      */
-    protected function rankFieldWeightLabel(Model $model, $field)
+    protected function rankFieldWeightLabel(Model $model, string $field): string
     {
-        $label = $this->option($model, "rank.fields.{$field}");
+        $label = $this->stringOption($model, "rank.fields.{$field}");
 
         return collect(['A', 'B', 'C', 'D'])
             ->contains($label) ? $label : '';
@@ -455,10 +453,8 @@ class PostgresEngine extends Engine
 
     /**
      * Get rank weights.
-     *
-     * @return string
      */
-    protected function rankWeights(Model $model)
+    protected function rankWeights(Model $model): string
     {
         $weights = $this->option($model, 'rank.weights');
 
@@ -471,20 +467,16 @@ class PostgresEngine extends Engine
 
     /**
      * Get rank normalization.
-     *
-     * @return int
      */
-    protected function rankNormalization(Model $model)
+    protected function rankNormalization(Model $model): int
     {
-        return $this->option($model, 'rank.normalization', 0);
+        return $this->intOption($model, 'rank.normalization', 0);
     }
 
     /**
      * See if the index should be maintained for a given model.
-     *
-     * @return bool
      */
-    protected function shouldMaintainIndex(Model $model = null)
+    protected function shouldMaintainIndex(Model $model = null): bool
     {
         if ((bool) $this->config('maintain_index', true) === false) {
             return false;
@@ -499,20 +491,16 @@ class PostgresEngine extends Engine
 
     /**
      * Get the name of the column that holds indexed documents.
-     *
-     * @return string
      */
-    protected function getIndexColumn(Model $model)
+    protected function getIndexColumn(Model $model): string
     {
-        return $this->option($model, 'column', 'searchable');
+        return $this->stringOption($model, 'column', 'searchable');
     }
 
     /**
      * See if indexed documents are stored in a external table.
-     *
-     * @return mixed
      */
-    protected function isExternalIndex(Model $model)
+    protected function isExternalIndex(Model $model): mixed
     {
         return $this->option($model, 'external', false);
     }
@@ -520,11 +508,9 @@ class PostgresEngine extends Engine
     /**
      * Get the model specific option value or a default.
      *
-     * @param  string  $key
      * @param  mixed  $default
-     * @return mixed
      */
-    protected function option(Model $model, $key, $default = null)
+    protected function option(Model $model, string $key, mixed $default = null): mixed
     {
         if (! method_exists($model, 'searchableOptions')) {
             return $default;
@@ -536,15 +522,55 @@ class PostgresEngine extends Engine
     }
 
     /**
+     * Get the model specific option value or a default as an int.
+     */
+    protected function intOption(Model $model, string $key, int $default): int
+    {
+        $value = $this->option($model, $key, $default);
+
+        if (is_int($value)) {
+            return $value;
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Get the model specific option value or a default as a string.
+     */
+    protected function stringOption(Model $model, string $key, string $default = ''): string
+    {
+        $value = $this->option($model, $key, $default);
+
+        if (is_string($value)) {
+            return $value;
+        } else {
+            return $default;
+        }
+    }
+
+    /**
      * Get the config value or a default.
      *
-     * @param  string  $key
      * @param  mixed  $default
-     * @return mixed
      */
-    protected function config($key, $default = null)
+    protected function config(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->config, $key, $default);
+    }
+
+    /**
+     * Get the config value or a default as a string.
+     */
+    protected function stringConfig(string $key, string $default = ''): string
+    {
+        $value = $this->config($key, $default);
+
+        if (is_string($value)) {
+            return $value;
+        } else {
+            return $default;
+        }
     }
 
     /**
@@ -562,7 +588,7 @@ class PostgresEngine extends Engine
      */
     protected function searchConfig(Model $model)
     {
-        return $this->option($model, 'config', $this->config('config', '')) ?: 'simple';
+        return $this->stringOption($model, 'config', $this->stringConfig('config', '')) ?: '';
     }
 
     /**

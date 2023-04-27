@@ -7,7 +7,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:searchableAs\\(\\)\\.$#"
-			count: 3
+			count: 4
 			path: src/PostgresEngine.php
 
 		-
