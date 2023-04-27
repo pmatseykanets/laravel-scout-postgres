@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - laravel-10-compatibility
   pull_request:
 
 jobs:
