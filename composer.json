@@ -1,5 +1,5 @@
 {
-    "name": "pmatseykanets/laravel-scout-postgres",
+    "name": "devnoiseconsulting/laravel-scout-postgres-tsvector",
     "description": "PostgreSQL Full Text Search Driver for Laravel Scout",
     "keywords": [
         "laravel",
@@ -9,13 +9,18 @@
         "full text search",
         "FTS"
     ],
-    "homepage": "https://github.com/pmatseykanets/laravel-scout-postgres",
+    "homepage": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/pmatseykanets/laravel-scout-postgres/issues",
-        "source": "https://github.com/pmatseykanets/laravel-scout-postgres"
+        "issues": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector/issues",
+        "source": "https://github.com/devNoiseConsulting/laravel-scout-postgres-tsvector"
     },
     "authors": [
+        {
+            "name": "Michael Flynn",
+            "email": "flynnmj@devnoise.com",
+            "homepage": "https://github.com/devNoiseConsulting"
+        },
         {
             "name": "Peter Matseykanets",
             "email": "pmatseykanets@gmail.com",
@@ -23,15 +28,19 @@
         }
     ],
     "require": {
-        "php": "^7.2|^8.0",
-        "illuminate/contracts": "~6.0|~7.0|~8.0",
-        "illuminate/database": "~6.0|~7.0|~8.0",
-        "illuminate/support": "~6.0|~7.0|~8.0",
-        "laravel/scout": "~7.0|~8.0"
+        "php": "^8.0|^8.1|^8.2",
+        "illuminate/contracts": "^9|^10",
+        "illuminate/database": "^9|^10",
+        "illuminate/support": "^9|^10",
+        "laravel/scout": "^9|^10"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.3",
-        "mockery/mockery": "^1.2.3"
+        "laravel/pint": "^1.10",
+        "mockery/mockery": "^1.5",
+        "nunomaduro/larastan": "^2.6",
+        "orchestra/testbench": "^8.5",
+        "phpunit/phpunit": "^9.6",
+        "tightenco/duster": "^2.0"
     },
     "autoload": {
         "psr-4": {

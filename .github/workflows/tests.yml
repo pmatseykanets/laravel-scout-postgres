@@ -4,33 +4,27 @@ on:
   push:
     branches:
       - master
+      - 9.x
   pull_request:
 
 jobs:
   tests:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        php: [7.2, 7.3, 7.4]
-        laravel: [^6.0, ^7.0, ^8.0]
-        scout: [^7.0, ^8.0]
+        php: [8.0, 8.1, 8.2]
+        laravel: [^9, ^10]
+        scout: [^9, ^10]
         exclude:
-          - php: 7.2
-            laravel: ^8.0
-          - laravel: ^8.0
-            scout: ^7.0
-        include:
           - php: 8.0
-            laravel: ^8.0
-            scout: ^8.0
+            laravel: ^10
 
     name: Test PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - Scout ${{ matrix.scout }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -42,11 +36,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-           composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
-           composer require "illuminate/database=${{ matrix.laravel }}" --no-update
-           composer require "illuminate/support=${{ matrix.laravel }}" --no-update
-           composer require "laravel/scout=${{ matrix.scout }}" --no-update
-           composer update --prefer-dist --no-interaction --no-progress
+          composer remove nunomaduro/larastan --dev --no-update
+          composer remove orchestra/testbench --dev --no-update
+          composer remove tightenco/duster --dev --no-update
+          composer remove laravel/pint --dev --no-update
+          composer require "illuminate/contracts=${{ matrix.laravel }}" --no-update
+          composer require "illuminate/database=${{ matrix.laravel }}" --no-update
+          composer require "illuminate/support=${{ matrix.laravel }}" --no-update
+          composer require "laravel/scout=${{ matrix.scout }}" --no-update
+          composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run tests
         run: vendor/bin/phpunit --verbose

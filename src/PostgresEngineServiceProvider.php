@@ -12,7 +12,10 @@ use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 
 class PostgresEngineServiceProvider extends ServiceProvider
 {
-    public static function builderMacros()
+    /**
+     * @return array<string, string>
+     */
+    public static function builderMacros(): array
     {
         return [
             'usingPhraseQuery' => PhraseToTsQuery::class,
@@ -22,13 +25,20 @@ class PostgresEngineServiceProvider extends ServiceProvider
         ];
     }
 
-    public function boot()
+    /**
+     * Bootstrap the application events.
+     */
+    public function boot(): void
     {
         $this->app->make(EngineManager::class)->extend('pgsql', function () {
-            return new PostgresEngine(
-                $this->app->get('db'),
-                $this->app->get('config')->get('scout.pgsql', [])
-            );
+            /** @var \Illuminate\Database\ConnectionResolverInterface $db */
+            $db = $this->app->get('db');
+            /** @var \Illuminate\Support\Facades\Config $config */
+            $config = $this->app->get('config');
+            /** @var array<string, mixed> $pgScoutConfig */
+            $pgScoutConfig = $config->get('scout.pgsql', []);
+
+            return new PostgresEngine($db, $pgScoutConfig);
         });
 
         foreach (self::builderMacros() as $macro => $class) {
@@ -36,10 +46,11 @@ class PostgresEngineServiceProvider extends ServiceProvider
         }
     }
 
-    protected function registerBuilderMacro($name, $class)
+    protected function registerBuilderMacro(string $name, string $class): void
     {
         if (! Builder::hasMacro($name)) {
             Builder::macro($name, function () use ($class) {
+                /** @var Builder $this */
                 $this->callback = function ($builder, $config) use ($class) {
                     return new $class($builder->query, $config);
                 };
