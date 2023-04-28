@@ -18,7 +18,7 @@
     "authors": [
         {
             "name": "Michael Flynn",
-            "email": "flynnmj@devnoise.com.com",
+            "email": "flynnmj@devnoise.com",
             "homepage": "https://github.com/devNoiseConsulting"
         },
         {
@@ -35,8 +35,12 @@
         "laravel/scout": "^9|^10"
     },
     "require-dev": {
+        "laravel/pint": "^1.10",
+        "mockery/mockery": "^1.5",
+        "nunomaduro/larastan": "^2.6",
+        "orchestra/testbench": "^8.5",
         "phpunit/phpunit": "^9.6",
-        "mockery/mockery": "^1.5"
+        "tightenco/duster": "^2.0"
     },
     "autoload": {
         "psr-4": {

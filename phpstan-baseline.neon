@@ -14,7 +14,4 @@ parameters:
 			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:toSearchableArray\\(\\)\\.$#"
 			count: 1
 			path: src/PostgresEngine.php
-		-
-			message: "#^Access to an undefined property ScoutEngines\\\\Postgres\\\\PostgresEngineServiceProvider\\:\\:\\$callback\\.$#"
-			count: 1
-			path: src/PostgresEngineServiceProvider.php
+

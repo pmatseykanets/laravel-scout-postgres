@@ -50,6 +50,7 @@ class PostgresEngineServiceProvider extends ServiceProvider
     {
         if (! Builder::hasMacro($name)) {
             Builder::macro($name, function () use ($class) {
+                /** @var Builder $this */
                 $this->callback = function ($builder, $config) use ($class) {
                     return new $class($builder->query, $config);
                 };
